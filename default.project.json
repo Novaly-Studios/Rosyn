@@ -1,0 +1,12 @@
+{
+  "name": "Rosyn",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedFirst": {
+      "$className": "ReplicatedFirst",
+      "Rosyn": {
+        "$path": "Source"
+      }
+    }
+  }
+}
