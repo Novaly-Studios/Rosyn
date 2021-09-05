@@ -1,0 +1,33 @@
+{
+  "name": "@rbxts/rosyn",
+  "version": "1.0.0",
+  "description": "Documentation TODO",
+  "main": "out/init.lua",
+  "scripts": {
+    "build": "rbxtsc",
+    "watch": "rbxtsc -w",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Novaly-Studios/Rosyn.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Novaly-Studios/Rosyn/issues"
+  },
+  "homepage": "https://github.com/Novaly-Studios/Rosyn#readme",
+  "types": "out/index.d.ts",
+  "files": [
+    "out"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@rbxts/compiler-types": "^1.2.2-types.0",
+    "@rbxts/types": "^1.0.523"
+  }
+}
