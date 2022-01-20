@@ -16,6 +16,7 @@ return function()
         end
 
         function Class:Initial() end
+        function Class:Destroy() end
 
         return Class
     end
