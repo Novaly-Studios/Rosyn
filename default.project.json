@@ -1,12 +1,11 @@
 {
-  "name": "Rosyn",
+  "name": "Cleaner",
   "tree": {
     "$className": "DataModel",
     "ReplicatedFirst": {
+      "$ignoreUnknownInstances": true,
       "$className": "ReplicatedFirst",
-      "Rosyn": {
-        "$path": "Source"
-      }
+      "Cleaner": {"$path": "src"}
     }
   }
 }
