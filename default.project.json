@@ -3,10 +3,9 @@
   "tree": {
     "$className": "DataModel",
     "ReplicatedFirst": {
+      "$ignoreUnknownInstances": true,
       "$className": "ReplicatedFirst",
-      "Rosyn": {
-        "$path": "Source"
-      }
+      "Rosyn": {"$path": "src"}
     }
   }
 }
