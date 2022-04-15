@@ -185,10 +185,10 @@ return function()
             local Test1 = MakeClass()
             local Inst = MakeTestInstance({"AwaitComponent2"}, Workspace)
 
-            coroutine.wrap(function()
+            task.spawn(function()
                 task.wait(1)
                 Rosyn.Register("AwaitComponent2", {Test1})
-            end)()
+            end)
 
             expect(Rosyn.AwaitComponent(Inst, Test1)).to.be.ok()
             Inst:Destroy()
@@ -420,4 +420,8 @@ return function()
     describe("Rosyn.GetComponentsFromInstance", function()
         -- TODO
     end)
+
+    -- TODO:
+    -- Constructor & destructor yield tests
+    -- Object lock tests
 end

@@ -12,29 +12,31 @@ type InstanceToComponents = {[Instance]: {[ComponentClass]: ComponentInstance}}
 type ComponentClassToInstances = {[ComponentClass]: {[Instance]: boolean}}
 type ComponentClassToComponents = {[ComponentClass]: {[ComponentInstance]: boolean}}
 
-type ComponentClassAddedEvents = {[ComponentClass]: BindableEvent}
-type ComponentClassRemovedEvents = {[ComponentClass]: BindableEvent}
-type ComponentClassInitializedEvents = {[ComponentClass]: BindableEvent}
+type ComponentClassAddedEvents = {[ComponentClass]: {[any]: any}}
+type ComponentClassRemovedEvents = {[ComponentClass]: {[any]: any}}
+type ComponentClassInitializedEvents = {[ComponentClass]: {[any]: any}}
 
 local TestService = game:GetService("TestService")
 local CollectionService = game:GetService("CollectionService")
 
 local CheckYield = require(script:WaitForChild("CheckYield"))
+local Cleaner = require(script.Parent:WaitForChild("Cleaner"))
+local Signal = require(script.Parent:WaitForChild("Signal"))
 
 local ERR_NO_INITIAL = "Component %s on %s does not contain an 'Initial' method"
 local ERR_INIT_FAILED = "Component %s Initial call failed on %s\n%s\n"
 local ERR_WAIT_TIMEOUT = "Component %s on %s timed out"
 local ERR_NO_TAG_GIVEN = "No tag given!"
-local COMPONENT_FINISHED = "Component lifecycle ended for %s, but key %s was indexed"
 local ERR_NO_OBJECT_GIVEN = "No object given!"
 local ERR_NO_COMPONENT_LIST = "No component class list given!"
 local ERR_OBJECT_NOT_INSTANCE = "Object was not an Instance!"
 local ERR_EMPTY_COMPONENT_LIST = "Empty component class list given!"
-local ERR_COMPONENT_NEW_YIELDED = "Component constructor %s yielded on %s"
+local ERR_COMPONENT_NEW_YIELDED = "Component constructor %s yielded or threw an error on %s"
 local ERR_COMPONENT_NOT_PRESENT = "Component %s not present on %s"
 local ERR_ITEM_ALREADY_DESTROYED = "Already destroyed!"
 local ERR_NO_COMPONENT_CLASS_GIVEN = "No component class given!"
 local ERR_COMPONENT_ALREADY_PRESENT = "Component %s already present on %s"
+local ERR_COMPONENT_DESTROY_YIELDED = "Component destructor %s yielded or threw an error on %s"
 local ERR_COMPONENT_CLASS_NOT_TABLE = "ComponentClass was not an table!"
 local ERR_TYPE_FIELD_INCORRECT_TYPE = "Type field in component should be a string"
 local WARN_COMPONENT_LIFECYCLE_ALREDY_ENDED = "Component lifecycle ended before Initial call completed - %s on %s"
@@ -73,7 +75,7 @@ local _ComponentClassInitializedEvents: ComponentClassInitializedEvents = {}
 local Rosyn = {
     -- Associations between Instances, component classes, and component instances, to ensure immediate lookup
 
-    --- Map of tagged Instances as keys with values of Array<ComponentClass> 
+    --- Map of tagged Instances as keys with values of Array<ComponentClass>
     -- @usage InstanceToComponents = {Instance = {ComponentClass1 = ComponentInstance1, ComponentClass2 = ComponentInstance2, ...}, ...}
     InstanceToComponents = _InstanceToComponents;
     --- Map of ComponentClasses as keys with values of Array<Instance>
@@ -85,15 +87,18 @@ local Rosyn = {
 
     -- Events related to component classes
 
-    --- Map of initialized Component Classes with values of Component Added BindableEvents
+    --- Map of initialized Component Classes with values of Component Added Signals
     -- @usage ComponentClassAddedEvents = {ComponentClass1 = Event1, ...}
     ComponentClassAddedEvents = _ComponentClassAddedEvents;
-    --- Map of initialized Component Classes with values of Component Removed BindableEvents
+    --- Map of initialized Component Classes with values of Component Removed Signals
     -- @usage ComponentClassRemovedEvents = {ComponentClass1 = Event1, ...}
     ComponentClassRemovedEvents = _ComponentClassRemovedEvents;
-    --- Map of initialized Component Classes with values of Component Initialized BindableEvents
+    --- Map of initialized Component Classes with values of Component Initialized Signals
     -- @usage ComponentClassInitializedEvents = {ComponentClass1 = Event1, ...}
     ComponentClassInitializedEvents = _ComponentClassInitializedEvents;
+    --- Signal for failed Component Class initialization
+    -- @usage ComponentClassInitializationFailed:Fire(ComponentClassName: string, Instance: Instance, Error: string)
+    ComponentClassInitializationFailed = Signal.new();
 };
 
 --[[
@@ -135,6 +140,7 @@ function Rosyn.Register(Tag: string, Components: {ComponentClass}, AncestorTarge
                 Component[Key] = function(...)
                     debug.setmemorycategory(MemoryTag)
                     local Results = {Value(...)}
+                    debug.resetmemorycategory()
                     return unpack(Results)
                 end
             end
@@ -147,7 +153,20 @@ function Rosyn.Register(Tag: string, Components: {ComponentClass}, AncestorTarge
             Component.Initial = function(self)
                 debug.setmemorycategory(MemoryTag)
                 OldInitial(self)
+                debug.resetmemorycategory()
             end
+        end
+    end
+
+    -- Wrap class using Cleaner for memory safety unless user specifies not to
+    -- Verify classes have Destroy methods
+    for _, Component in ipairs(Components) do
+        if (Component.Destroy == nil) then
+            warn(WARN_NO_DESTROY_METHOD:format(Rosyn.GetComponentName(Component)))
+        end
+
+        if (not Component._DO_NOT_WRAP and not Cleaner.IsWrapped(Component)) then
+            Cleaner.Wrap(Component)
         end
     end
 
@@ -214,15 +233,6 @@ function Rosyn.Register(Tag: string, Components: {ComponentClass}, AncestorTarge
             Rosyn._RemoveComponent(Item, ComponentClass)
         end
     end)
-
-    -- Verify it has a Destroy method
-    for _, Component in ipairs(Components) do
-        if (Component.Destroy) then
-            continue
-        end
-
-        warn(WARN_NO_DESTROY_METHOD:format(Rosyn.GetComponentName(Component)))
-    end
 end
 
 --[[--
@@ -263,11 +273,11 @@ function Rosyn.AwaitComponent(Object: Instance, ComponentClass: ComponentClass, 
     -- Alternate case - wait for construction or timeout or deparenting
     Timeout = Timeout or DEFAULT_TIMEOUT
 
+    local Proxy = Signal.new()
     local Trace = debug.traceback()
-    local Proxy = Instance.new("BindableEvent")
     local ComponentName = Rosyn.GetComponentName(ComponentClass)
 
-    local AddedConnection; AddedConnection = Rosyn._GetAddedEvent(ComponentClass).Event:Connect(function(TargetInstance: Instance)
+    local AddedConnection; AddedConnection = Rosyn._GetAddedEvent(ComponentClass):Connect(function(TargetInstance: Instance)
         if (TargetInstance ~= Object) then
             return
         end
@@ -289,7 +299,7 @@ function Rosyn.AwaitComponent(Object: Instance, ComponentClass: ComponentClass, 
         end
     end)
 
-    Result = Proxy.Event:Wait()
+    Result = Proxy:Wait()
     AddedConnection:Disconnect()
 
     assert(Result == 1,
@@ -321,10 +331,10 @@ function Rosyn.AwaitComponentInit(Object: Instance, ComponentClass: ComponentCla
     Timeout = Timeout or DEFAULT_TIMEOUT
 
     local Trace = debug.traceback()
-    local Proxy = Instance.new("BindableEvent")
+    local Proxy = Signal.new()
     local ComponentName = Rosyn.GetComponentName(ComponentClass)
 
-    local InitializedConnection; InitializedConnection = Rosyn._GetInitializedEvent(ComponentClass).Event:Connect(function(TargetInstance: Instance)
+    local InitializedConnection; InitializedConnection = Rosyn._GetInitializedEvent(ComponentClass):Connect(function(TargetInstance: Instance)
         if (TargetInstance ~= Object) then
             return
         end
@@ -346,7 +356,7 @@ function Rosyn.AwaitComponentInit(Object: Instance, ComponentClass: ComponentCla
         end
     end)
 
-    Result = Proxy.Event:Wait()
+    Result = Proxy:Wait()
     InitializedConnection:Disconnect()
 
     assert(Result == 1,
@@ -477,10 +487,17 @@ function Rosyn._AddComponent(Object: Instance, ComponentClass: ComponentClass)
         -- We can't use microprofiler tags because Initial is allowed to yield.
         -- Monitor for memory issues instead, because Initial is likely to contain various event connections.
         assert(NewComponent.Initial, ERR_NO_INITIAL:format(ComponentName, Object:GetFullName()))
-        debug.setmemorycategory(DiagnosisTag)
 
-        local Success, Result = pcall(function()
+        xpcall(function()
             NewComponent:Initial()
+        end, function(ErrorMessage)
+            -- Remove Rosyn and empty lines from the stack trace.
+            local ErrorStack = debug.traceback(nil, 2)
+            ErrorStack = string.gsub(ErrorStack, script:GetFullName() .. ":?[%d]*", "")
+            ErrorStack = string.gsub(ErrorStack, "\n\n", "")
+
+            Rosyn.ComponentClassInitializationFailed:Fire(ComponentName, Object, ErrorMessage, ErrorStack)
+            TestService:Error(ERR_INIT_FAILED:format(ComponentName, Object:GetFullName(), ErrorMessage .. "\n" .. ErrorStack))
         end)
 
         if (table.isfrozen(NewComponent)) then
@@ -490,10 +507,6 @@ function Rosyn._AddComponent(Object: Instance, ComponentClass: ComponentClass)
 
         NewComponent._INITIALIZED = true
         Rosyn._GetInitializedEvent(ComponentClass):Fire(Object)
-
-        if (not Success) then
-            TestService:Error(ERR_INIT_FAILED:format(ComponentName, Object:GetFullName(), Result))
-        end
         -- TODO: maybe we pcall and timeout the Initial and ensure Destroy is always called after
         -- Otherwise we have to use the "retroactive" cleaner pattern
     end)
@@ -559,27 +572,17 @@ function Rosyn._RemoveComponent(Object: Instance, ComponentClass: ComponentClass
     debug.profilebegin(DiagnosisTag .. ".Destroy")
 
     if (ExistingComponent.Destroy) then
-        CheckYield(function()
+        local Yielded = CheckYield(function()
             ExistingComponent:Destroy()
         end)
-    end
-
-    if (FORCE_RELEASE_REFS) then
-        setmetatable(ExistingComponent, {
-            __mode = "kv";
-            __index = function(_, Key)
-                error(COMPONENT_FINISHED:format(ComponentName, tostring(Key)))
-            end;
-        })
-
-        table.freeze(ExistingComponent)
+        assert(not Yielded, ERR_COMPONENT_DESTROY_YIELDED:format(ComponentName, Object:GetFullName()))
     end
 
     debug.profileend()
 end
 
 --[[
-    Obtains or creates a BindableEvent which will fire when a component has been instantiated.
+    Obtains or creates a Signal which will fire when a component has been instantiated.
     @todo Refactor these 3 since they have a lot of repeated code
     @usage Private Method
 ]]
@@ -588,10 +591,10 @@ function Rosyn._GetAddedEvent(ComponentClass)
     assert(type(ComponentClass) == "table", ERR_COMPONENT_CLASS_NOT_TABLE)
 
     local ComponentClassAddedEvents = Rosyn.ComponentClassAddedEvents
-    local AddedEvent: BindableEvent = ComponentClassAddedEvents[ComponentClass]
+    local AddedEvent = ComponentClassAddedEvents[ComponentClass]
 
     if (not AddedEvent) then
-        AddedEvent = Instance.new("BindableEvent")
+        AddedEvent = Signal.new()
         ComponentClassAddedEvents[ComponentClass] = AddedEvent
     end
 
@@ -599,18 +602,18 @@ function Rosyn._GetAddedEvent(ComponentClass)
 end
 
 --[[--
-    Obtains or creates a BindableEvent which will fire when a component has been destroyed.
+    Obtains or creates a Signal which will fire when a component has been destroyed.
     @usage Private Method
 ]]
-function Rosyn._GetRemovedEvent(ComponentClass: ComponentClass): BindableEvent
+function Rosyn._GetRemovedEvent(ComponentClass: ComponentClass)
     assert(ComponentClass, ERR_NO_COMPONENT_CLASS_GIVEN)
     assert(type(ComponentClass) == "table", ERR_COMPONENT_CLASS_NOT_TABLE)
 
     local ComponentClassRemovedEvents = Rosyn.ComponentClassRemovedEvents
-    local RemovedEvent: BindableEvent = ComponentClassRemovedEvents[ComponentClass]
+    local RemovedEvent = ComponentClassRemovedEvents[ComponentClass]
 
     if (not RemovedEvent) then
-        RemovedEvent = Instance.new("BindableEvent")
+        RemovedEvent = Signal.new()
         ComponentClassRemovedEvents[ComponentClass] = RemovedEvent
     end
 
@@ -618,18 +621,18 @@ function Rosyn._GetRemovedEvent(ComponentClass: ComponentClass): BindableEvent
 end
 
 --[[--
-    Obtains or creates a BindableEvent which will fire when a component has passed its initialization phase.
+    Obtains or creates a Signal which will fire when a component has passed its initialization phase.
     @usage Private Method
 ]]
-function Rosyn._GetInitializedEvent(ComponentClass: ComponentClass): BindableEvent
+function Rosyn._GetInitializedEvent(ComponentClass: ComponentClass)
     assert(ComponentClass, ERR_NO_COMPONENT_CLASS_GIVEN)
     assert(type(ComponentClass) == "table", ERR_COMPONENT_CLASS_NOT_TABLE)
 
     local ComponentClassInitializedEvents = Rosyn.ComponentClassInitializedEvents
-    local InitializedEvent: BindableEvent = ComponentClassInitializedEvents[ComponentClass]
+    local InitializedEvent = ComponentClassInitializedEvents[ComponentClass]
 
     if (not InitializedEvent) then
-        InitializedEvent = Instance.new("BindableEvent")
+        InitializedEvent = Signal.new()
         ComponentClassInitializedEvents[ComponentClass] = InitializedEvent
     end
 
