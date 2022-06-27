@@ -112,6 +112,13 @@ return function()
             expect(DidTest2).to.equal(false)
         end)
 
+        it("should allow 'game' to be registered", function()
+            expect(function()
+                local Test1 = MakeClass()
+                Rosyn.Register("AncestorTestTag3", {Test1}, game)
+            end).never.to.throw()
+        end)
+
         it("should call destroy on objects when the associated Instance is removed", function()
             local DidDestroy = false
             local Test = MakeClass()

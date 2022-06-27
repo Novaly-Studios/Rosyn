@@ -19,7 +19,7 @@ local ValidComponentClass = TypeGuard.Object():CheckMetatable(TypeGuard.Nil()):O
 local ValidComponentInstance = TypeGuard.Object():CheckMetatable(ValidComponentClass)
 local ValidComponentClassOrInstance = ValidComponentClass:Or(ValidComponentInstance)
 
-local ValidGameObject = TypeGuard.Instance():IsDescendantOf(game)
+local ValidGameObject = TypeGuard.Instance():IsDescendantOf(game):Or(TypeGuard.Instance():Equals(game))
 
 local ERR_NO_INITIAL = "Component %s on %s does not contain an 'Initial' method"
 local ERR_INIT_FAILED = "Component %s Initial call failed on %s\n%s\n"
