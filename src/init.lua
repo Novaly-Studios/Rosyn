@@ -1,44 +1,34 @@
---!nonstrict
-type ComponentInstance = any
-type ComponentClass = {
-    Type: string?,
-
-    new: (Instance) -> ComponentInstance,
-    Initial: () -> (),
-    Destroy: () -> (),
-}
-
-type InstanceToComponents = {[Instance]: {[ComponentClass]: ComponentInstance}}
-type ComponentClassToInstances = {[ComponentClass]: {[Instance]: boolean}}
-type ComponentClassToComponents = {[ComponentClass]: {[ComponentInstance]: boolean}}
-
-type ComponentClassAddedEvents = {[ComponentClass]: {[any]: any}}
-type ComponentClassRemovedEvents = {[ComponentClass]: {[any]: any}}
-type ComponentClassInitializedEvents = {[ComponentClass]: {[any]: any}}
-
-local TestService = game:GetService("TestService")
 local CollectionService = game:GetService("CollectionService")
+local ReplicatedFirst = game:GetService("ReplicatedFirst")
+local TestService = game:GetService("TestService")
 
-local CheckYield = require(script:WaitForChild("CheckYield"))
-local Cleaner = require(script.Parent:WaitForChild("Cleaner"))
-local Signal = require(script.Parent:WaitForChild("Signal"))
+--local CheckYield = ReplicatedFirst:WaitForChild("") --require(script:WaitForChild("CheckYield"))
+local TypeGuard = require(ReplicatedFirst:WaitForChild("TypeGuard")) --require(script.Parent:WaitForChild("TypeGuard"))
+local Cleaner = require(ReplicatedFirst:WaitForChild("Cleaner")) --require(script.Parent:WaitForChild("Cleaner"))
+local XSignal = require(ReplicatedFirst:WaitForChild("XSignal")) --require(script.Parent:WaitForChild("XSignal"))
+
+type XSignal<T> = XSignal.XSignal<T>
+
+local ValidComponentClass = TypeGuard.Object():CheckMetatable(TypeGuard.Nil()):OfStructure({
+    Type = TypeGuard.String():Optional();
+    Structure = TypeGuard.Object():Optional();
+
+    new = TypeGuard.Function();
+    Initial = TypeGuard.Function();
+    Destroy = TypeGuard.Function();
+})
+local ValidComponentInstance = TypeGuard.Object():CheckMetatable(ValidComponentClass)
+local ValidComponentClassOrInstance = ValidComponentClass:Or(ValidComponentInstance)
+
+local ValidGameObject = TypeGuard.Instance():IsDescendantOf(game)
 
 local ERR_NO_INITIAL = "Component %s on %s does not contain an 'Initial' method"
 local ERR_INIT_FAILED = "Component %s Initial call failed on %s\n%s\n"
-local ERR_WAIT_TIMEOUT = "Component %s on %s timed out"
-local ERR_NO_TAG_GIVEN = "No tag given!"
-local ERR_NO_OBJECT_GIVEN = "No object given!"
-local ERR_NO_COMPONENT_LIST = "No component class list given!"
-local ERR_OBJECT_NOT_INSTANCE = "Object was not an Instance!"
-local ERR_EMPTY_COMPONENT_LIST = "Empty component class list given!"
-local ERR_COMPONENT_NEW_YIELDED = "Component constructor %s yielded or threw an error on %s"
 local ERR_COMPONENT_NOT_PRESENT = "Component %s not present on %s"
+local ERR_COMPONENT_NEW_YIELDED = "Component constructor %s yielded or threw an error on %s"
 local ERR_ITEM_ALREADY_DESTROYED = "Already destroyed!"
-local ERR_NO_COMPONENT_CLASS_GIVEN = "No component class given!"
 local ERR_COMPONENT_ALREADY_PRESENT = "Component %s already present on %s"
 local ERR_COMPONENT_DESTROY_YIELDED = "Component destructor %s yielded or threw an error on %s"
-local ERR_COMPONENT_CLASS_NOT_TABLE = "ComponentClass was not an table!"
-local ERR_TYPE_FIELD_INCORRECT_TYPE = "Type field in component should be a string"
 local WARN_COMPONENT_LIFECYCLE_ALREDY_ENDED = "Component lifecycle ended before Initial call completed - %s on %s"
 
 local WARN_MULTIPLE_REGISTER = "Register attempted to create duplicate component: %s\n\n%s"
@@ -47,18 +37,25 @@ local WARN_TAG_DESTROY_CREATE = "CollectionService reported a destroyed tag befo
 local WARN_COMPONENT_NOT_FOUND = "Component not found: %s"
 local WARN_COMPONENT_INFINITE_WAIT = "Potential infinite wait on (\n\tObject = '%s';\n\tComponent = '%s';\n)\n%s"
 
+local DESTROY_SUFFIX = ".Destroy"
+local MEMORY_TAG_SUFFIX = ":Initial()"
+local DIAGNOSIS_TAG_PREFIX ="Component."
+
+local EMPTY_STRING = ""
+
+local TIMEOUT_WARN = 10
 local DEFAULT_TIMEOUT = 60
-local FORCE_RELEASE_REFS = true
-local TIMEOUT_WARN_MULTIPLIER = 1/6
-local WRAP_FUNCTIONS_WITH_MEMORY_TAGS = "Initial"
 
-local _InstanceToComponents: InstanceToComponents = {}
-local _ComponentClassToInstances: ComponentClassToInstances = {}
-local _ComponentClassToComponents: ComponentClassToComponents = {}
+local VALIDATE_PARAMS = true
+local WRAP_INITIAL_MEM_TAGS = true
 
-local _ComponentClassAddedEvents: ComponentClassAddedEvents = {}
-local _ComponentClassRemovedEvents: ComponentClassRemovedEvents = {}
-local _ComponentClassInitializedEvents: ComponentClassInitializedEvents = {}
+local _InstanceToComponents = {}
+local _ComponentClassToInstances = {}
+local _ComponentClassToComponents = {}
+
+local _ComponentClassAddedEvents = {}
+local _ComponentClassRemovedEvents = {}
+local _ComponentClassInitializedEvents = {}
 
 --[[--
     Rosyn is an extension of CollectionService.
@@ -98,56 +95,40 @@ local Rosyn = {
     ComponentClassInitializedEvents = _ComponentClassInitializedEvents;
     --- Signal for failed Component Class initialization
     -- @usage ComponentClassInitializationFailed:Fire(ComponentClassName: string, Instance: Instance, Error: string)
-    ComponentClassInitializationFailed = Signal.new();
+    ComponentClassInitializationFailed = XSignal.new();
 };
 
+local GetComponentNameParams = TypeGuard.Params(ValidComponentClassOrInstance)
 --[[
     Attempts to get a unique ID from the component class or instance passed. A Type field in all component classes is the recommended approach.
     @param Component The component instance or class to obtain the name from.
 ]]
-function Rosyn.GetComponentName(Component: ComponentInstance | ComponentClass): string
-    -- Also works on component classes if you write things properly
-    if (Component.Type) then
-        assert(typeof(Component.Type) == "string", ERR_TYPE_FIELD_INCORRECT_TYPE)
+function Rosyn.GetComponentName(ComponentClassOrInstance): string
+    if (VALIDATE_PARAMS) then
+        GetComponentNameParams(ComponentClassOrInstance)
     end
 
-    return Component.Type or tostring(Component)
+    return ComponentClassOrInstance.Type or tostring(ComponentClassOrInstance)
 end
 
+local RegisterParams = TypeGuard.Params(TypeGuard.String(), TypeGuard.Array(ValidComponentClass):MinLength(0), ValidGameObject:Optional())
 --[[--
     Registers component(s) to be automatically associated with instances with a certain tag.
     @param Tag The string of the CollectionService tag
     @param Components An array of ComponentClasses
     @param AncestorTarget The instance to look if any descendants added to it have the given Tag
 ]]
-function Rosyn.Register(Tag: string, Components: {ComponentClass}, AncestorTarget: Instance?)
-    assert(Tag, ERR_NO_TAG_GIVEN)
-    assert(Components, ERR_NO_COMPONENT_LIST)
-    assert(#Components > 0, ERR_EMPTY_COMPONENT_LIST)
+function Rosyn.Register(Tag: string, Components: {any}, AncestorTarget: Instance?)
+    if (VALIDATE_PARAMS) then
+        RegisterParams(Tag, Components, AncestorTarget)
+    end
 
     AncestorTarget = AncestorTarget or game
 
     -- We can wrap methods in memory tags to help diagnose memory leaks
-    if (WRAP_FUNCTIONS_WITH_MEMORY_TAGS == "*") then
-        for _, Component in ipairs(Components) do
-            for Key, Value in pairs(Component) do
-                if (type(Value) ~= "function") then
-                    continue
-                end
-
-                local MemoryTag = Rosyn.GetComponentName(Component) .. ":" .. Key .. "(...)"
-
-                Component[Key] = function(...)
-                    debug.setmemorycategory(MemoryTag)
-                    local Results = {Value(...)}
-                    debug.resetmemorycategory()
-                    return unpack(Results)
-                end
-            end
-        end
-    elseif (WRAP_FUNCTIONS_WITH_MEMORY_TAGS == "Initial") then
-        for _, Component in ipairs(Components) do
-            local MemoryTag = Rosyn.GetComponentName(Component) .. ":Initial()"
+    if (WRAP_INITIAL_MEM_TAGS) then
+        for _, Component in Components do
+            local MemoryTag = Rosyn.GetComponentName(Component) .. MEMORY_TAG_SUFFIX
             local OldInitial = Component.Initial
 
             Component.Initial = function(self)
@@ -160,7 +141,7 @@ function Rosyn.Register(Tag: string, Components: {ComponentClass}, AncestorTarge
 
     -- Wrap class using Cleaner for memory safety unless user specifies not to
     -- Verify classes have Destroy methods
-    for _, Component in ipairs(Components) do
+    for _, Component in Components do
         if (Component.Destroy == nil) then
             warn(WARN_NO_DESTROY_METHOD:format(Rosyn.GetComponentName(Component)))
         end
@@ -188,9 +169,7 @@ function Rosyn.Register(Tag: string, Components: {ComponentClass}, AncestorTarge
 
         Registered[Item] = true
 
-        for Index = 1, #Components do
-            local ComponentClass = Components[Index]
-
+        for _, ComponentClass in Components do
             if (Rosyn.GetComponent(Item, ComponentClass)) then
                 warn(WARN_MULTIPLE_REGISTER:format(Rosyn.GetComponentName(ComponentClass), Trace))
                 continue
@@ -201,7 +180,7 @@ function Rosyn.Register(Tag: string, Components: {ComponentClass}, AncestorTarge
     end
 
     -- Pick up existing tagged Instances
-    for _, Item in pairs(CollectionService:GetTagged(Tag)) do
+    for _, Item in CollectionService:GetTagged(Tag) do
         task.spawn(HandleCreation, Item)
     end
 
@@ -222,9 +201,7 @@ function Rosyn.Register(Tag: string, Components: {ComponentClass}, AncestorTarge
             warn(WARN_TAG_DESTROY_CREATE:format(Tag))
         end
 
-        for Index = 1, #Components do
-            local ComponentClass = Components[Index]
-
+        for _, ComponentClass in Components do
             if (not Rosyn.GetComponent(Item, ComponentClass)) then
                 warn(WARN_COMPONENT_NOT_FOUND:format(Rosyn.GetComponentName(ComponentClass)))
                 continue
@@ -235,90 +212,33 @@ function Rosyn.Register(Tag: string, Components: {ComponentClass}, AncestorTarge
     end)
 end
 
+local GetComponentParams = TypeGuard.Params(ValidGameObject, ValidComponentClass)
 --[[--
     Attempts to obtain a specific component from an Instance given a component class.
     @param Object The Instance to check for the passed ComponentClass
     @param ComponentClass The uninitialized ComponentClass to check for
     @return ComponentInstance or nil
 ]]
-function Rosyn.GetComponent(Object: Instance, ComponentClass: ComponentClass): ComponentInstance
-    assert(Object, ERR_NO_OBJECT_GIVEN)
-    assert(typeof(Object) == "Instance", ERR_OBJECT_NOT_INSTANCE)
-
-    assert(ComponentClass, ERR_NO_COMPONENT_CLASS_GIVEN)
-    assert(type(ComponentClass) == "table", ERR_COMPONENT_CLASS_NOT_TABLE)
+function Rosyn.GetComponent<T>(Object: Instance, ComponentClass: T): T
+    if (VALIDATE_PARAMS) then
+        GetComponentParams(Object, ComponentClass)
+    end
 
     local ComponentsForObject = Rosyn.InstanceToComponents[Object]
     return ComponentsForObject and ComponentsForObject[ComponentClass] or nil
 end
 
---[[
-    Waits for a component instance's construction on a given Instance and returns it. Throws errors for timeout and target Instance deparenting to prevent memory leaks.
-    @todo Add exit code 3 -> component was removed from the Instance while waiting (can help user debug things better)
-]]
-function Rosyn.AwaitComponent(Object: Instance, ComponentClass: ComponentClass, Timeout: number?): ComponentInstance?
-    assert(Object, ERR_NO_OBJECT_GIVEN)
-    assert(typeof(Object) == "Instance", ERR_OBJECT_NOT_INSTANCE)
 
-    assert(ComponentClass, ERR_NO_COMPONENT_CLASS_GIVEN)
-    assert(type(ComponentClass) == "table", ERR_COMPONENT_CLASS_NOT_TABLE)
-
-    -- Best case - it's created already
-    local Got = Rosyn.GetComponent(Object, ComponentClass)
-
-    if (Got) then
-        return Got
-    end
-
-    -- Alternate case - wait for construction or timeout or deparenting
-    Timeout = Timeout or DEFAULT_TIMEOUT
-
-    local Proxy = Signal.new()
-    local Trace = debug.traceback()
-    local ComponentName = Rosyn.GetComponentName(ComponentClass)
-
-    local AddedConnection; AddedConnection = Rosyn._GetAddedEvent(ComponentClass):Connect(function(TargetInstance: Instance)
-        if (TargetInstance ~= Object) then
-            return
-        end
-
-        Proxy:Fire(1)
-    end)
-
-    local Result
-
-    task.delay(Timeout * TIMEOUT_WARN_MULTIPLIER, function()
-        if (not Result) then
-            warn(WARN_COMPONENT_INFINITE_WAIT:format(Object:GetFullName(), ComponentName, Trace))
-        end
-    end)
-
-    task.delay(Timeout, function()
-        if (not Result) then
-            Proxy:Fire(2)
-        end
-    end)
-
-    Result = Proxy:Wait()
-    AddedConnection:Disconnect()
-
-    assert(Result == 1,
-            Result == 2 and ERR_WAIT_TIMEOUT:format(ComponentName, Object:GetFullName()))
-
-    return Rosyn.GetComponent(Object, ComponentClass)
-end
-
+local AwaitComponentInitParams = TypeGuard.Params(ValidGameObject, ValidComponentClass, TypeGuard.Number():Optional())
 --[[
     Waits for a component instance's asynchronous Initial method to complete and returns it. Throws errors for timeout and target Instance deparenting to prevent memory leaks.
     @todo Re-work to get rid of the _INITIALIZED field approach and use key associations in another table
     @todo Add exit code 3 -> component was removed from the Instance while waiting (can help user debug things better)
 ]]
-function Rosyn.AwaitComponentInit(Object: Instance, ComponentClass: ComponentClass, Timeout: number?): ComponentInstance?
-    assert(Object, ERR_NO_OBJECT_GIVEN)
-    assert(typeof(Object) == "Instance", ERR_OBJECT_NOT_INSTANCE)
-
-    assert(ComponentClass, ERR_NO_COMPONENT_CLASS_GIVEN)
-    assert(type(ComponentClass) == "table", ERR_COMPONENT_CLASS_NOT_TABLE)
+function Rosyn.AwaitComponentInit<T>(Object: Instance, ComponentClass: T, Timeout: number?): T
+    if (VALIDATE_PARAMS) then
+        AwaitComponentInitParams(Object, ComponentClass, Timeout)
+    end
 
     -- Best case - it's registered AND initialized already
     local Got = Rosyn.GetComponent(Object, ComponentClass)
@@ -331,48 +251,37 @@ function Rosyn.AwaitComponentInit(Object: Instance, ComponentClass: ComponentCla
     Timeout = Timeout or DEFAULT_TIMEOUT
 
     local Trace = debug.traceback()
-    local Proxy = Signal.new()
+    local OnInitialized = XSignal.new()
     local ComponentName = Rosyn.GetComponentName(ComponentClass)
 
-    local InitializedConnection; InitializedConnection = Rosyn._GetInitializedEvent(ComponentClass):Connect(function(TargetInstance: Instance)
+    local InitializedConnection; InitializedConnection = Rosyn.GetInitializedEvent(ComponentClass):Connect(function(TargetInstance: Instance)
         if (TargetInstance ~= Object) then
             return
         end
 
-        Proxy:Fire(1)
+        InitializedConnection:Disconnect()
+        OnInitialized:Fire()
     end)
 
-    local Result
-
-    task.delay(Timeout * TIMEOUT_WARN_MULTIPLIER, function()
-        if (not Result) then
-            warn(WARN_COMPONENT_INFINITE_WAIT:format(Object:GetFullName(), ComponentName, Trace))
-        end
+    local Warn = task.delay(TIMEOUT_WARN, function()
+        warn(WARN_COMPONENT_INFINITE_WAIT:format(Object:GetFullName(), ComponentName, Trace))
     end)
 
-    task.delay(Timeout, function()
-        if (not Result) then
-            Proxy:Fire(2)
-        end
-    end)
-
-    Result = Proxy:Wait()
+    OnInitialized.Event:Wait(Timeout, true)
     InitializedConnection:Disconnect()
-
-    assert(Result == 1,
-            Result == 2 and ERR_WAIT_TIMEOUT:format(ComponentName, Object:GetFullName()))
+    task.cancel(Warn)
 
     return Rosyn.GetComponent(Object, ComponentClass)
 end
 
+local GetComponentFromDescendantParams = TypeGuard.Params(ValidGameObject, ValidComponentClass)
 --[[
     Obtains a component instance from an Instance or any of its ascendants.
 ]]
-function Rosyn.GetComponentFromDescendant(Object: Instance, ComponentClass: ComponentClass): ComponentInstance?
-    assert(Object, ERR_NO_OBJECT_GIVEN)
-
-    assert(ComponentClass, ERR_NO_COMPONENT_CLASS_GIVEN)
-    assert(type(ComponentClass) == "table", ERR_COMPONENT_CLASS_NOT_TABLE)
+function Rosyn.GetComponentFromDescendant<T>(Object: Instance, ComponentClass: T): T?
+    if (VALIDATE_PARAMS) then
+        GetComponentFromDescendantParams(Object, ComponentClass)
+    end
 
     while (Object.Parent) do
         local Component = Rosyn.GetComponent(Object, ComponentClass)
@@ -387,61 +296,76 @@ function Rosyn.GetComponentFromDescendant(Object: Instance, ComponentClass: Comp
     return nil
 end
 
+local GetInstancesOfClassParams = TypeGuard.Params(ValidComponentClass)
 --[[--
     Obtains Map of all Instances for which there exists a given component class on.
     @todo Think of an efficient way to prevent external writes to the returned table.
 ]]
-function Rosyn.GetInstancesOfClass(ComponentClass: ComponentClass): {[Instance]: boolean}
-    assert(ComponentClass, ERR_NO_COMPONENT_CLASS_GIVEN)
-    assert(type(ComponentClass) == "table", ERR_COMPONENT_CLASS_NOT_TABLE)
+function Rosyn.GetInstancesOfClass(ComponentClass): {[Instance]: boolean}
+    if (VALIDATE_PARAMS) then
+        GetInstancesOfClassParams(ComponentClass)
+    end
 
     return Rosyn.ComponentClassToInstances[ComponentClass] or {}
 end
 
+local GetComponentsOfClassParams = TypeGuard.Params(ValidComponentClass)
 --[[--
     Obtains Map of all components of a particular class.
     @todo Think of an efficient way to prevent external writes to the returned table.
 ]]
-function Rosyn.GetComponentsOfClass(ComponentClass: ComponentClass): {[ComponentInstance]: boolean}
-    assert(ComponentClass, ERR_NO_COMPONENT_CLASS_GIVEN)
-    assert(type(ComponentClass) == "table", ERR_COMPONENT_CLASS_NOT_TABLE)
+function Rosyn.GetComponentsOfClass<T>(ComponentClass: T): {[T]: boolean}
+    if (VALIDATE_PARAMS) then
+        GetComponentsOfClassParams(ComponentClass)
+    end
 
     return Rosyn.ComponentClassToComponents[ComponentClass] or {}
 end
 
+local GetComponentsFromInstance = TypeGuard.Params(ValidGameObject)
 --[[--
     Obtains all components of any class which are associated to a specific Instance.
     @todo Think of an efficient way to prevent external writes to the returned table.
 ]]
-function Rosyn.GetComponentsFromInstance(Object: Instance): {[ComponentClass]: ComponentInstance}
-    assert(Object, ERR_NO_OBJECT_GIVEN)
-    assert(typeof(Object) == "Instance", ERR_OBJECT_NOT_INSTANCE)
+function Rosyn.GetComponentsFromInstance(Object: Instance): {[any]: any}
+    if (VALIDATE_PARAMS) then
+        GetComponentsFromInstance(Object)
+    end
 
     return Rosyn.InstanceToComponents[Object] or {}
 end
 
 ------------------------------------------- Internal -------------------------------------------
 
+local AddComponentParams = TypeGuard.Params(ValidGameObject, ValidComponentClass)
 --[[--
     Creates and wraps a component around an Instance, given a component class.
     @usage Private Method
 ]]
-function Rosyn._AddComponent(Object: Instance, ComponentClass: ComponentClass)
-    assert(Object, ERR_NO_OBJECT_GIVEN)
-    assert(typeof(Object) == "Instance", ERR_OBJECT_NOT_INSTANCE)
-
-    assert(ComponentClass, ERR_NO_COMPONENT_CLASS_GIVEN)
-    assert(type(ComponentClass) == "table", ERR_COMPONENT_CLASS_NOT_TABLE)
+function Rosyn._AddComponent(Object: Instance, ComponentClass)
+    if (VALIDATE_PARAMS) then
+        AddComponentParams(Object, ComponentClass)
+    end
 
     local ComponentName = Rosyn.GetComponentName(ComponentClass)
-    local DiagnosisTag = "Component." .. ComponentName
+    local DiagnosisTag = DIAGNOSIS_TAG_PREFIX .. ComponentName
     assert(Rosyn.GetComponent(Object, ComponentClass) == nil, ERR_COMPONENT_ALREADY_PRESENT:format(ComponentName, Object:GetFullName()))
+
+    -- Uses TypeGuard to check the structure of the Instance
+    local Structure = ComponentClass.Structure
+
+    if (Structure) then
+        Structure:Assert(Object)
+    end
 
     debug.profilebegin(DiagnosisTag)
         ---------------------------------------------------------------------------------------------------------
-        local Yielded, NewComponent = CheckYield(function()
+        --[[ local Yielded, NewComponent = CheckYield(function()
             return ComponentClass.new(Object)
-        end)
+        end) ]]
+        local Yielded = false
+        local NewComponent = ComponentClass.new(Object)
+
         assert(not Yielded, ERR_COMPONENT_NEW_YIELDED:format(ComponentName, Object:GetFullName()))
 
         local InstanceToComponents = Rosyn.InstanceToComponents
@@ -480,7 +404,7 @@ function Rosyn._AddComponent(Object: Instance, ComponentClass: ComponentClass)
         ---------------------------------------------------------------------------------------------------------
     debug.profileend()
 
-    Rosyn._GetAddedEvent(ComponentClass):Fire(Object)
+    Rosyn.GetAddedEvent(ComponentClass):Fire(Object)
 
     -- Initialise component in separate coroutine
     task.spawn(function()
@@ -493,8 +417,8 @@ function Rosyn._AddComponent(Object: Instance, ComponentClass: ComponentClass)
         end, function(ErrorMessage)
             -- Remove Rosyn and empty lines from the stack trace.
             local ErrorStack = debug.traceback(nil, 2)
-            ErrorStack = string.gsub(ErrorStack, script:GetFullName() .. ":?[%d]*", "")
-            ErrorStack = string.gsub(ErrorStack, "\n\n", "")
+            ErrorStack = string.gsub(ErrorStack, script:GetFullName() .. ":?[%d]*", EMPTY_STRING)
+            ErrorStack = string.gsub(ErrorStack, "\n\n", EMPTY_STRING)
 
             Rosyn.ComponentClassInitializationFailed:Fire(ComponentName, Object, ErrorMessage, ErrorStack)
             TestService:Error(ERR_INIT_FAILED:format(ComponentName, Object:GetFullName(), ErrorMessage .. "\n" .. ErrorStack))
@@ -506,25 +430,24 @@ function Rosyn._AddComponent(Object: Instance, ComponentClass: ComponentClass)
         end
 
         NewComponent._INITIALIZED = true
-        Rosyn._GetInitializedEvent(ComponentClass):Fire(Object)
+        Rosyn.GetInitializedEvent(ComponentClass):Fire(Object)
         -- TODO: maybe we pcall and timeout the Initial and ensure Destroy is always called after
         -- Otherwise we have to use the "retroactive" cleaner pattern
     end)
 end
 
+local RemoveComponentParams = TypeGuard.Params(ValidGameObject, ValidComponentClass)
 --[[--
     Removes a component from an Instance, given a component class. Calls Destroy on component.
     @usage Private Method
 ]]
-function Rosyn._RemoveComponent(Object: Instance, ComponentClass: ComponentClass)
-    assert(Object, ERR_NO_OBJECT_GIVEN)
-    assert(typeof(Object) == "Instance", ERR_OBJECT_NOT_INSTANCE)
-
-    assert(ComponentClass, ERR_NO_COMPONENT_CLASS_GIVEN)
-    assert(type(ComponentClass) == "table", ERR_COMPONENT_CLASS_NOT_TABLE)
+function Rosyn._RemoveComponent(Object: Instance, ComponentClass)
+    if (VALIDATE_PARAMS) then
+        RemoveComponentParams(Object, ComponentClass)
+    end
 
     local ComponentName = Rosyn.GetComponentName(ComponentClass)
-    local DiagnosisTag = "Component." .. ComponentName
+    local DiagnosisTag = DIAGNOSIS_TAG_PREFIX .. ComponentName
     local ExistingComponent = Rosyn.GetComponent(Object, ComponentClass)
     assert(ExistingComponent, ERR_COMPONENT_NOT_PRESENT:format(ComponentName, Object:GetFullName()))
 
@@ -566,73 +489,76 @@ function Rosyn._RemoveComponent(Object: Instance, ComponentClass: ComponentClass
         ---------------------------------------------------------------------------------------------------------
     debug.profileend()
 
-    Rosyn._GetRemovedEvent(ComponentClass):Fire(Object)
+    Rosyn.GetRemovedEvent(ComponentClass):Fire(Object)
 
     -- Destroy component to let it clean stuff up
-    debug.profilebegin(DiagnosisTag .. ".Destroy")
+    debug.profilebegin(DiagnosisTag .. DESTROY_SUFFIX)
 
     if (ExistingComponent.Destroy) then
-        local Yielded = CheckYield(function()
+        local Yielded = false--CheckYield(function()
             ExistingComponent:Destroy()
-        end)
+        --end)
         assert(not Yielded, ERR_COMPONENT_DESTROY_YIELDED:format(ComponentName, Object:GetFullName()))
     end
 
     debug.profileend()
 end
 
+local GetAddedEventParams = TypeGuard.Params(ValidComponentClass)
 --[[
     Obtains or creates a Signal which will fire when a component has been instantiated.
     @todo Refactor these 3 since they have a lot of repeated code
-    @usage Private Method
 ]]
-function Rosyn._GetAddedEvent(ComponentClass)
-    assert(ComponentClass, ERR_NO_COMPONENT_CLASS_GIVEN)
-    assert(type(ComponentClass) == "table", ERR_COMPONENT_CLASS_NOT_TABLE)
+function Rosyn.GetAddedEvent(ComponentClass): XSignal<Instance>
+    if (VALIDATE_PARAMS) then
+        GetAddedEventParams(ComponentClass)
+    end
 
     local ComponentClassAddedEvents = Rosyn.ComponentClassAddedEvents
     local AddedEvent = ComponentClassAddedEvents[ComponentClass]
 
     if (not AddedEvent) then
-        AddedEvent = Signal.new()
+        AddedEvent = XSignal.new()
         ComponentClassAddedEvents[ComponentClass] = AddedEvent
     end
 
     return AddedEvent
 end
 
+local GetRemovedEventParams = TypeGuard.Params(ValidComponentClass)
 --[[--
     Obtains or creates a Signal which will fire when a component has been destroyed.
-    @usage Private Method
 ]]
-function Rosyn._GetRemovedEvent(ComponentClass: ComponentClass)
-    assert(ComponentClass, ERR_NO_COMPONENT_CLASS_GIVEN)
-    assert(type(ComponentClass) == "table", ERR_COMPONENT_CLASS_NOT_TABLE)
+function Rosyn.GetRemovedEvent(ComponentClass): XSignal<Instance>
+    if (VALIDATE_PARAMS) then
+        GetRemovedEventParams(ComponentClass)
+    end
 
     local ComponentClassRemovedEvents = Rosyn.ComponentClassRemovedEvents
     local RemovedEvent = ComponentClassRemovedEvents[ComponentClass]
 
     if (not RemovedEvent) then
-        RemovedEvent = Signal.new()
+        RemovedEvent = XSignal.new()
         ComponentClassRemovedEvents[ComponentClass] = RemovedEvent
     end
 
     return RemovedEvent
 end
 
+local GetInitializedEventParams = TypeGuard.Params(ValidComponentClass)
 --[[--
     Obtains or creates a Signal which will fire when a component has passed its initialization phase.
-    @usage Private Method
 ]]
-function Rosyn._GetInitializedEvent(ComponentClass: ComponentClass)
-    assert(ComponentClass, ERR_NO_COMPONENT_CLASS_GIVEN)
-    assert(type(ComponentClass) == "table", ERR_COMPONENT_CLASS_NOT_TABLE)
+function Rosyn.GetInitializedEvent(ComponentClass): XSignal<Instance>
+    if (VALIDATE_PARAMS) then
+        GetInitializedEventParams(ComponentClass)
+    end
 
     local ComponentClassInitializedEvents = Rosyn.ComponentClassInitializedEvents
     local InitializedEvent = ComponentClassInitializedEvents[ComponentClass]
 
     if (not InitializedEvent) then
-        InitializedEvent = Signal.new()
+        InitializedEvent = XSignal.new()
         ComponentClassInitializedEvents[ComponentClass] = InitializedEvent
     end
 
@@ -646,14 +572,14 @@ end
 function Rosyn._Invariant()
     local Counts = {}
 
-    for Item in pairs(Rosyn.InstanceToComponents) do
+    for Item in Rosyn.InstanceToComponents do
         local Components = Rosyn.GetComponentsFromInstance(Item)
 
         if (not Components) then
             continue
         end
 
-        for _, Component in pairs(Components) do
+        for _, Component in Components do
             Component = Component._COMPONENT_REF
             Counts[tostring(Component)] = (Counts[tostring(Component)] or 0) + 1
         end
@@ -662,13 +588,13 @@ function Rosyn._Invariant()
     -- Ensure it matches
     local OtherCounts = {}
 
-    for ComponentClass, Instances in pairs(Rosyn.ComponentClassToComponents) do
-        for _ in pairs(Instances) do
+    for ComponentClass, Instances in Rosyn.ComponentClassToComponents do
+        for _ in Instances do
             OtherCounts[tostring(ComponentClass)] = (OtherCounts[tostring(ComponentClass)] or 0) + 1
         end
     end
 
-    for Key, Value in pairs(OtherCounts) do
+    for Key, Value in OtherCounts do
         local SameObjectCount = Counts[Key]
 
         if (SameObjectCount) then
@@ -681,9 +607,42 @@ function Rosyn._Invariant()
     return true
 end
 
---- Provides backwards compatibility, deprecated in favor of AwaitComponent
--- @usage DEPRECATED
--- @function WaitForComponent
-Rosyn.WaitForComponent = Rosyn.AwaitComponent -- Backward compatibility
+--[[ local function MakeClass()
+    local Class = {}
+    Class.__index = Class
+    Class.Type = "Class"
+
+    function Class.new(Root)
+        return setmetatable({
+            Root = Root;
+        }, Class)
+    end
+
+    function Class:Initial() end
+    function Class:Destroy() end
+
+    return Class
+end
+
+local function MakeTestInstance(Tags, Parent)
+    local Test = Instance.new("Model")
+
+    for _, Tag in Tags do
+        CollectionService:AddTag(Test, Tag)
+    end
+
+    Test.Parent = Parent
+    return Test
+end
+
+local Test1 = MakeClass()
+local Inst = MakeTestInstance({"AwaitComponentInit2"}, workspace)
+
+task.delay(1, function()
+    Rosyn.Register("AwaitComponentInit2", {Test1})
+end)
+
+print(">>>", Rosyn.AwaitComponentInit(Inst, Test1))
+Inst:Destroy() ]]
 
 return Rosyn
