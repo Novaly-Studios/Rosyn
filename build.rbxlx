@@ -1,14 +1,14 @@
 <roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
 	<External>null</External>
 	<External>nil</External>
-	<Item class="Workspace" referent="RBXB9BFCB9028F74C0C82EA4F18A73F86DE">
+	<Item class="Workspace" referent="RBXE02378515F1F46F8AC15F508CBFB4557">
 		<Properties>
 			<bool name="AllowThirdPartySales">false</bool>
 			<token name="AnimationWeightedBlendFix">0</token>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<token name="ClientAnimatorThrottling">0</token>
 			<string name="CollisionGroups">Default^0^-1</string>
-			<Ref name="CurrentCamera">RBXE69F1BCA5CE6453CB10F9BDFB76FEA9E</Ref>
+			<Ref name="CurrentCamera">RBX5CB5A9906D3B48D884975AA1F0E6A759</Ref>
 			<double name="DistributedGameTime">0</double>
 			<bool name="ExplicitAutoJoints">true</bool>
 			<float name="FallenPartsDestroyHeight">-500</float>
@@ -59,7 +59,7 @@
 			<BinaryString name="Tags"></BinaryString>
 			<bool name="TerrainWeldsFixed">true</bool>
 			<bool name="TouchesUseCollisionGroups">false</bool>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001e0ea</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001e0ea</UniqueId>
 			<OptionalCoordinateFrame name="WorldPivotData">
 				<CFrame>
 					<X>0</X>
@@ -77,22 +77,22 @@
 				</CFrame>
 			</OptionalCoordinateFrame>
 		</Properties>
-		<Item class="Camera" referent="RBXE69F1BCA5CE6453CB10F9BDFB76FEA9E">
+		<Item class="Camera" referent="RBX5CB5A9906D3B48D884975AA1F0E6A759">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<CoordinateFrame name="CFrame">
-					<X>14.1891079</X>
-					<Y>26.4522877</Y>
-					<Z>6.13309765</Z>
-					<R00>0.617290497</R00>
-					<R01>-0.650024831</R01>
-					<R02>0.443193227</R02>
-					<R10>-0</R10>
-					<R11>0.563332081</R11>
-					<R12>0.826230586</R12>
-					<R20>-0.786735356</R20>
-					<R21>-0.510024309</R21>
-					<R22>0.347739518</R22>
+					<X>3.73327398</X>
+					<Y>20.2088928</Y>
+					<Z>19.5492077</Z>
+					<R00>0.988633633</R00>
+					<R01>-0.0949004665</R01>
+					<R02>0.116607875</R02>
+					<R10>7.4505806e-09</R10>
+					<R11>0.775604069</R11>
+					<R12>0.631219685</R12>
+					<R20>-0.15034458</R20>
+					<R21>-0.624045014</R21>
+					<R22>0.766788304</R22>
 				</CoordinateFrame>
 				<Ref name="CameraSubject">null</Ref>
 				<token name="CameraType">0</token>
@@ -117,10 +117,10 @@
 				<string name="Name">Camera</string>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
-				<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb16</UniqueId>
+				<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb16</UniqueId>
 			</Properties>
 		</Item>
-		<Item class="Terrain" referent="RBX4EB61D65EA2C4A2C8C91FB3FA1E327E7">
+		<Item class="Terrain" referent="RBX0506715262584CDC84B68715CB543E7C">
 			<Properties>
 				<token name="AcquisitionMethod">0</token>
 				<bool name="Anchored">true</bool>
@@ -206,7 +206,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 				<token name="TopSurface">3</token>
 				<token name="TopSurfaceInput">0</token>
 				<float name="Transparency">0</float>
-				<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb94</UniqueId>
+				<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb94</UniqueId>
 				<Vector3 name="Velocity">
 					<X>0</X>
 					<Y>0</Y>
@@ -229,7 +229,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			</Properties>
 		</Item>
 	</Item>
-	<Item class="SoundService" referent="RBXA97B3F441CF3459490566B781600243A">
+	<Item class="SoundService" referent="RBXA34433EF664C44F4BC5BB6B08F9E39D7">
 		<Properties>
 			<token name="AmbientReverb">0</token>
 			<BinaryString name="AttributesSerialize"></BinaryString>
@@ -240,28 +240,28 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<float name="RolloffScale">1</float>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fac9</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fac9</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="NonReplicatedCSGDictionaryService" referent="RBX8FC2E98966034B7A9058BDDF7881F331">
+	<Item class="NonReplicatedCSGDictionaryService" referent="RBX877E41149B7947E1AAC749A9FB0F85EA">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">NonReplicatedCSGDictionaryService</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fad5</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fad5</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="CSGDictionaryService" referent="RBX01AFA54DB01F435280C133FB74E73EE5">
+	<Item class="CSGDictionaryService" referent="RBX3BCC64403EF54FC48C7B03050926BAD9">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">CSGDictionaryService</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fad6</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fad6</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="Chat" referent="RBX3053ECDBF36741DE9CF29F130D624CFB">
+	<Item class="Chat" referent="RBX71EC4DAD8DD64E508D06B08F203BA663">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<bool name="BubbleChatEnabled">false</bool>
@@ -269,19 +269,19 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<string name="Name">Chat</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fadb</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fadb</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="TimerService" referent="RBXBB2C6C97341E4F97A6DAE2187E462DB4">
+	<Item class="TimerService" referent="RBXC3B4869FB6AC4550AA96EBC462EF923E">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">Instance</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fadc</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fadc</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="Players" referent="RBXB56F1E334FCD42DA8DE7B43F0813F88F">
+	<Item class="Players" referent="RBX6523125849274B02BFDB801ACFF76E1A">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<bool name="CharacterAutoLoads">true</bool>
@@ -291,7 +291,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<float name="RespawnTime">5</float>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fade</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fade</UniqueId>
 		</Properties>
 	</Item>
 	<Item class="ReplicatedFirst" referent="0">
@@ -300,19 +300,19 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 			<string name="Name">ReplicatedFirst</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fae2</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fae2</UniqueId>
 		</Properties>
 		<Item class="ModuleScript" referent="1">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<Content name="LinkedSource"><null></null></Content>
 				<string name="Name">Cleaner</string>
-				<string name="ScriptGuid">{244053FA-AD69-4AAE-A4BE-A34F059F4BEB}</string>
+				<string name="ScriptGuid">{FBED47F4-DFED-4D94-893E-EDCCC547283C}</string>
 				<ProtectedString name="Source"><![CDATA[return require(script.Parent._Index["tpc9000_cleaner@0.1.1"]["cleaner"])
 ]]></ProtectedString>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
-				<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb81</UniqueId>
+				<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb81</UniqueId>
 			</Properties>
 		</Item>
 		<Item class="ModuleScript" referent="2">
@@ -320,12 +320,12 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<Content name="LinkedSource"><null></null></Content>
 				<string name="Name">TypeGuard</string>
-				<string name="ScriptGuid">{562C4606-8660-4DA8-8100-D97BBA9C5568}</string>
+				<string name="ScriptGuid">{E4106804-0D0B-430A-9164-8D39102B0995}</string>
 				<ProtectedString name="Source"><![CDATA[return require(script.Parent._Index["tpc9000_typeguard@2.2.0"]["typeguard"])
 ]]></ProtectedString>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
-				<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb82</UniqueId>
+				<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb82</UniqueId>
 			</Properties>
 		</Item>
 		<Item class="ModuleScript" referent="3">
@@ -333,12 +333,12 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<Content name="LinkedSource"><null></null></Content>
 				<string name="Name">XSignal</string>
-				<string name="ScriptGuid">{53A436EC-371D-4795-8480-1AB7FC256F2F}</string>
+				<string name="ScriptGuid">{942E5DE1-7A99-40A1-AE9A-95935DC74F4D}</string>
 				<ProtectedString name="Source"><![CDATA[return require(script.Parent._Index["tpc9000_xsignal@0.1.0"]["xsignal"])
 ]]></ProtectedString>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
-				<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb83</UniqueId>
+				<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb83</UniqueId>
 			</Properties>
 		</Item>
 		<Item class="Folder" referent="4">
@@ -347,7 +347,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 				<string name="Name">_Index</string>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
-				<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb84</UniqueId>
+				<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb84</UniqueId>
 			</Properties>
 			<Item class="Folder" referent="5">
 				<Properties>
@@ -355,19 +355,19 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 					<string name="Name">tpc9000_cleaner@0.1.1</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
-					<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb85</UniqueId>
+					<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb85</UniqueId>
 				</Properties>
 				<Item class="ModuleScript" referent="6">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">TypeGuard</string>
-						<string name="ScriptGuid">{58C99C17-EE20-4BFE-BABA-F84F6F7155AB}</string>
+						<string name="ScriptGuid">{D257093E-4BCD-4BEC-B846-2C79CAA2AC79}</string>
 						<ProtectedString name="Source"><![CDATA[return require(script.Parent.Parent["tpc9000_typeguard@2.2.0"]["typeguard"])
 ]]></ProtectedString>
 						<int64 name="SourceAssetId">-1</int64>
 						<BinaryString name="Tags"></BinaryString>
-						<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb86</UniqueId>
+						<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb86</UniqueId>
 					</Properties>
 				</Item>
 				<Item class="ModuleScript" referent="7">
@@ -375,7 +375,7 @@ gcLgc4RKxr21zq2UlJSM]]></BinaryString>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">cleaner</string>
-						<string name="ScriptGuid">{779CAD83-3A58-4B28-8719-7B1C377DB2E4}</string>
+						<string name="ScriptGuid">{28F0633D-7874-455C-B61C-570C4AFA7BC3}</string>
 						<ProtectedString name="Source"><![CDATA[local TypeGuard = require(script.Parent:WaitForChild("TypeGuard"))
 
 local ValidClass = TypeGuard.Object():OfStructure({
@@ -658,14 +658,14 @@ end
 return Cleaner]]></ProtectedString>
 						<int64 name="SourceAssetId">-1</int64>
 						<BinaryString name="Tags"></BinaryString>
-						<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb87</UniqueId>
+						<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb87</UniqueId>
 					</Properties>
 					<Item class="ModuleScript" referent="8">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<Content name="LinkedSource"><null></null></Content>
 							<string name="Name">init.spec</string>
-							<string name="ScriptGuid">{6CF0437C-85CA-4E0C-81C1-E116D9918ECE}</string>
+							<string name="ScriptGuid">{F83F6C39-E3A0-406E-B141-4D6D2C00A860}</string>
 							<ProtectedString name="Source"><![CDATA[return function()
     local Cleaner = require(script.Parent)
 
@@ -1085,7 +1085,7 @@ return Cleaner]]></ProtectedString>
 end]]></ProtectedString>
 							<int64 name="SourceAssetId">-1</int64>
 							<BinaryString name="Tags"></BinaryString>
-							<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb88</UniqueId>
+							<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb88</UniqueId>
 						</Properties>
 					</Item>
 				</Item>
@@ -1096,14 +1096,14 @@ end]]></ProtectedString>
 					<string name="Name">tpc9000_typeguard@2.2.0</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
-					<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb89</UniqueId>
+					<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb89</UniqueId>
 				</Properties>
 				<Item class="ModuleScript" referent="10">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">typeguard</string>
-						<string name="ScriptGuid">{7EE3DF3E-1AC8-4B26-9422-DE239BC45833}</string>
+						<string name="ScriptGuid">{88489B5A-2084-4A63-BE91-DAC6776F1C10}</string>
 						<ProtectedString name="Source"><![CDATA[local CollectionService = game:GetService("CollectionService")
 -- @TODO This script really needs splitting up into sub-modules
 
@@ -2905,14 +2905,14 @@ end
 return TypeGuard]]></ProtectedString>
 						<int64 name="SourceAssetId">-1</int64>
 						<BinaryString name="Tags"></BinaryString>
-						<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb8a</UniqueId>
+						<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb8a</UniqueId>
 					</Properties>
 					<Item class="ModuleScript" referent="11">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<Content name="LinkedSource"><null></null></Content>
 							<string name="Name">TypeGuard.spec</string>
-							<string name="ScriptGuid">{FCCEA1A2-843C-4C61-836F-3C55DDE353AA}</string>
+							<string name="ScriptGuid">{DD02EB01-CA51-40BF-BE60-09808AE8FB0D}</string>
 							<ProtectedString name="Source"><![CDATA[local CollectionService = game:GetService("CollectionService")
 
 return function()
@@ -5158,7 +5158,7 @@ return function()
 end]]></ProtectedString>
 							<int64 name="SourceAssetId">-1</int64>
 							<BinaryString name="Tags"></BinaryString>
-							<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb8b</UniqueId>
+							<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb8b</UniqueId>
 						</Properties>
 					</Item>
 				</Item>
@@ -5169,19 +5169,19 @@ end]]></ProtectedString>
 					<string name="Name">tpc9000_xsignal@0.1.0</string>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
-					<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb8c</UniqueId>
+					<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb8c</UniqueId>
 				</Properties>
 				<Item class="ModuleScript" referent="13">
 					<Properties>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">TypeGuard</string>
-						<string name="ScriptGuid">{FBB8E437-D248-4D3C-B749-37CB0318AB68}</string>
+						<string name="ScriptGuid">{EC5F1480-38EA-4FB6-813C-D965ED0F7F92}</string>
 						<ProtectedString name="Source"><![CDATA[return require(script.Parent.Parent["tpc9000_typeguard@2.2.0"]["typeguard"])
 ]]></ProtectedString>
 						<int64 name="SourceAssetId">-1</int64>
 						<BinaryString name="Tags"></BinaryString>
-						<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb8d</UniqueId>
+						<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb8d</UniqueId>
 					</Properties>
 				</Item>
 				<Item class="ModuleScript" referent="14">
@@ -5189,7 +5189,7 @@ end]]></ProtectedString>
 						<BinaryString name="AttributesSerialize"></BinaryString>
 						<Content name="LinkedSource"><null></null></Content>
 						<string name="Name">xsignal</string>
-						<string name="ScriptGuid">{8C325A9A-183E-4CDC-AAC7-99D8266EBB99}</string>
+						<string name="ScriptGuid">{7676AB2A-0DD9-4442-B174-85C77CC3E6B0}</string>
 						<ProtectedString name="Source"><![CDATA[local Connection = require(script.Connection)
 local TypeGuard = require(script.Parent:WaitForChild("TypeGuard"))
 
@@ -5555,14 +5555,14 @@ XSignal.extend = XSignal.Extend
 return XSignal]]></ProtectedString>
 						<int64 name="SourceAssetId">-1</int64>
 						<BinaryString name="Tags"></BinaryString>
-						<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb8e</UniqueId>
+						<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb8e</UniqueId>
 					</Properties>
 					<Item class="ModuleScript" referent="15">
 						<Properties>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<Content name="LinkedSource"><null></null></Content>
 							<string name="Name">Connection</string>
-							<string name="ScriptGuid">{468EC9AE-1F09-4A17-9F3E-B936C485D407}</string>
+							<string name="ScriptGuid">{086DF916-7743-4626-BCCB-EC8B5642C9A1}</string>
 							<ProtectedString name="Source"><![CDATA[export type Connection = {
     Connected: boolean,
 
@@ -5646,7 +5646,7 @@ end
 return Connection]]></ProtectedString>
 							<int64 name="SourceAssetId">-1</int64>
 							<BinaryString name="Tags"></BinaryString>
-							<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb8f</UniqueId>
+							<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb8f</UniqueId>
 						</Properties>
 					</Item>
 					<Item class="ModuleScript" referent="16">
@@ -5654,7 +5654,7 @@ return Connection]]></ProtectedString>
 							<BinaryString name="AttributesSerialize"></BinaryString>
 							<Content name="LinkedSource"><null></null></Content>
 							<string name="Name">init.spec</string>
-							<string name="ScriptGuid">{696BA9B3-6DD7-45BC-8590-902A3475F83B}</string>
+							<string name="ScriptGuid">{26CBC5AE-1492-4C35-A99E-58AC0EAFDE16}</string>
 							<ProtectedString name="Source"><![CDATA[return function()
     local XSignal = require(script.Parent)
 
@@ -6164,26 +6164,25 @@ return Connection]]></ProtectedString>
 end]]></ProtectedString>
 							<int64 name="SourceAssetId">-1</int64>
 							<BinaryString name="Tags"></BinaryString>
-							<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb90</UniqueId>
+							<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb90</UniqueId>
 						</Properties>
 					</Item>
 				</Item>
 			</Item>
 		</Item>
-		<Item class="ModuleScript" referent="RBX83BB59ABF26A40728E8B534DE17391DA">
+		<Item class="ModuleScript" referent="17">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<Content name="LinkedSource"><null></null></Content>
 				<string name="Name">Rosyn</string>
-				<string name="ScriptGuid">{6F933634-7568-4C62-BCBC-CEC1060A933A}</string>
+				<string name="ScriptGuid">{83243B1D-F9E9-4C39-86F8-BD951C48FEFC}</string>
 				<ProtectedString name="Source"><![CDATA[local CollectionService = game:GetService("CollectionService")
-local ReplicatedFirst = game:GetService("ReplicatedFirst")
 local TestService = game:GetService("TestService")
 
---local CheckYield = ReplicatedFirst:WaitForChild("") --require(script:WaitForChild("CheckYield"))
-local TypeGuard = require(ReplicatedFirst:WaitForChild("TypeGuard")) --require(script.Parent:WaitForChild("TypeGuard"))
-local Cleaner = require(ReplicatedFirst:WaitForChild("Cleaner")) --require(script.Parent:WaitForChild("Cleaner"))
-local XSignal = require(ReplicatedFirst:WaitForChild("XSignal")) --require(script.Parent:WaitForChild("XSignal"))
+local CheckYield = require(script:WaitForChild("CheckYield"))
+local TypeGuard = require(script.Parent:WaitForChild("TypeGuard"))
+local Cleaner = require(script.Parent:WaitForChild("Cleaner"))
+local XSignal = require(script.Parent:WaitForChild("XSignal"))
 
 type XSignal<T> = XSignal.XSignal<T>
 
@@ -6217,7 +6216,7 @@ local WARN_COMPONENT_INFINITE_WAIT = "Potential infinite wait on (\n\tObject = '
 
 local DESTROY_SUFFIX = ".Destroy"
 local MEMORY_TAG_SUFFIX = ":Initial()"
-local DIAGNOSIS_TAG_PREFIX ="Component."
+local DIAGNOSIS_TAG_PREFIX = "Component."
 
 local EMPTY_STRING = ""
 
@@ -6273,7 +6272,7 @@ local Rosyn = {
     ComponentClassInitializedEvents = _ComponentClassInitializedEvents;
     --- Signal for failed Component Class initialization
     -- @usage ComponentClassInitializationFailed:Fire(ComponentClassName: string, Instance: Instance, Error: string)
-    ComponentClassInitializationFailed = Instance.new("BindableEvent"); --XSignal.new();
+    ComponentClassInitializationFailed = XSignal.new();
 };
 
 local GetComponentNameParams = TypeGuard.Params(ValidComponentClassOrInstance)
@@ -6429,10 +6428,10 @@ function Rosyn.AwaitComponentInit<T>(Object: Instance, ComponentClass: T, Timeou
     Timeout = Timeout or DEFAULT_TIMEOUT
 
     local Trace = debug.traceback()
-    local OnInitialized = Instance.new("BindableEvent") --XSignal.new()
+    local OnInitialized = XSignal.new()
     local ComponentName = Rosyn.GetComponentName(ComponentClass)
 
-    local InitializedConnection; InitializedConnection = Rosyn.GetInitializedEvent(ComponentClass).Event:Connect(function(TargetInstance: Instance)
+    local InitializedConnection; InitializedConnection = Rosyn.GetInitializedEvent(ComponentClass):Connect(function(TargetInstance: Instance)
         if (TargetInstance ~= Object) then
             return
         end
@@ -6445,7 +6444,7 @@ function Rosyn.AwaitComponentInit<T>(Object: Instance, ComponentClass: T, Timeou
         warn(WARN_COMPONENT_INFINITE_WAIT:format(Object:GetFullName(), ComponentName, Trace))
     end)
 
-    OnInitialized.Event:Wait() --Timeout, true)
+    OnInitialized.Event:Wait(Timeout, true)
     InitializedConnection:Disconnect()
     task.cancel(Warn)
 
@@ -6538,11 +6537,9 @@ function Rosyn._AddComponent(Object: Instance, ComponentClass)
 
     debug.profilebegin(DiagnosisTag)
         ---------------------------------------------------------------------------------------------------------
-        --[[ local Yielded, NewComponent = CheckYield(function()
+        local Yielded, NewComponent = CheckYield(function()
             return ComponentClass.new(Object)
-        end) ]]
-        local Yielded = false
-        local NewComponent = ComponentClass.new(Object)
+        end)
 
         assert(not Yielded, ERR_COMPONENT_NEW_YIELDED:format(ComponentName, Object:GetFullName()))
 
@@ -6673,9 +6670,9 @@ function Rosyn._RemoveComponent(Object: Instance, ComponentClass)
     debug.profilebegin(DiagnosisTag .. DESTROY_SUFFIX)
 
     if (ExistingComponent.Destroy) then
-        local Yielded = false--CheckYield(function()
+        local Yielded = CheckYield(function()
             ExistingComponent:Destroy()
-        --end)
+        end)
         assert(not Yielded, ERR_COMPONENT_DESTROY_YIELDED:format(ComponentName, Object:GetFullName()))
     end
 
@@ -6696,7 +6693,7 @@ function Rosyn.GetAddedEvent(ComponentClass): XSignal<Instance>
     local AddedEvent = ComponentClassAddedEvents[ComponentClass]
 
     if (not AddedEvent) then
-        AddedEvent = Instance.new("BindableEvent")--XSignal.new()
+        AddedEvent = XSignal.new()
         ComponentClassAddedEvents[ComponentClass] = AddedEvent
     end
 
@@ -6716,7 +6713,7 @@ function Rosyn.GetRemovedEvent(ComponentClass): XSignal<Instance>
     local RemovedEvent = ComponentClassRemovedEvents[ComponentClass]
 
     if (not RemovedEvent) then
-        RemovedEvent = Instance.new("BindableEvent")--XSignal.new()
+        RemovedEvent = XSignal.new()
         ComponentClassRemovedEvents[ComponentClass] = RemovedEvent
     end
 
@@ -6736,7 +6733,7 @@ function Rosyn.GetInitializedEvent(ComponentClass): XSignal<Instance>
     local InitializedEvent = ComponentClassInitializedEvents[ComponentClass]
 
     if (not InitializedEvent) then
-        InitializedEvent = Instance.new("BindableEvent")--XSignal.new()
+        InitializedEvent = XSignal.new()
         ComponentClassInitializedEvents[ComponentClass] = InitializedEvent
     end
 
@@ -6785,55 +6782,17 @@ function Rosyn._Invariant()
     return true
 end
 
---[[ local function MakeClass()
-    local Class = {}
-    Class.__index = Class
-    Class.Type = "Class"
-
-    function Class.new(Root)
-        return setmetatable({
-            Root = Root;
-        }, Class)
-    end
-
-    function Class:Initial() end
-    function Class:Destroy() end
-
-    return Class
-end
-
-local function MakeTestInstance(Tags, Parent)
-    local Test = Instance.new("Model")
-
-    for _, Tag in Tags do
-        CollectionService:AddTag(Test, Tag)
-    end
-
-    Test.Parent = Parent
-    return Test
-end
-
-local Test1 = MakeClass()
-local Inst = MakeTestInstance({"AwaitComponentInit2"}, workspace)
-
-task.delay(1, function()
-    Rosyn.Register("AwaitComponentInit2", {Test1})
-end)
-
-print(">>>", Rosyn.AwaitComponentInit(Inst, Test1))
-Inst:Destroy() ]]
-
 return Rosyn]]></ProtectedString>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
-				<UniqueId name="UniqueId">32aa2190bee3440c02ca72670002c622</UniqueId>
+				<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb91</UniqueId>
 			</Properties>
-			<Item class="ModuleScript" referent="RBXDC72F9296B8A4301963BB4ADADD11BC0">
+			<Item class="ModuleScript" referent="18">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<Content name="LinkedSource"><null></null></Content>
 					<string name="Name">CheckYield</string>
-					<string name="ScriptGuid">{C0A75115-EC5E-49FC-A70E-ED2E6F163E88}</string>
+					<string name="ScriptGuid">{1930EC4A-8492-4569-A963-871BA2914789}</string>
 					<ProtectedString name="Source"><![CDATA[--[[
     Checks if a function yields. If a function
     yields, the coroutine it's spawned in won't
@@ -6854,15 +6813,15 @@ end
 return CheckYield]]></ProtectedString>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
-					<UniqueId name="UniqueId">32aa2190bee3440c02ca72670002c623</UniqueId>
+					<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb92</UniqueId>
 				</Properties>
 			</Item>
-			<Item class="ModuleScript" referent="RBX0F8E814D4B664871B9D0D8891F47BE75">
+			<Item class="ModuleScript" referent="19">
 				<Properties>
 					<BinaryString name="AttributesSerialize"></BinaryString>
 					<Content name="LinkedSource"><null></null></Content>
 					<string name="Name">Rosyn.spec</string>
-					<string name="ScriptGuid">{2FFC01BF-749C-4D63-A79A-19479E91E178}</string>
+					<string name="ScriptGuid">{B6AA935D-92B1-4B1F-8001-8E8C908A8640}</string>
 					<ProtectedString name="Source"><![CDATA[return function()
     local Workspace = game:GetService("Workspace")
     local CollectionService = game:GetService("CollectionService")
@@ -6889,7 +6848,7 @@ return CheckYield]]></ProtectedString>
     local function MakeTestInstance(Tags, Parent)
         local Test = Instance.new("Model")
 
-        for _, Tag in pairs(Tags) do
+        for _, Tag in Tags do
             CollectionService:AddTag(Test, Tag)
         end
 
@@ -6900,7 +6859,7 @@ return CheckYield]]></ProtectedString>
     local function Count(Item)
         local Result = 0
 
-        for _ in pairs(Item) do
+        for _ in Item do
             Result += 1
         end
 
@@ -6912,7 +6871,7 @@ return CheckYield]]></ProtectedString>
     end)
 
     afterAll(function()
-        for _, Item in pairs(Workspace:GetChildren()) do
+        for _, Item in Workspace:GetChildren() do
             if (not Item:IsA("Model")) then
                 continue
             end
@@ -6923,8 +6882,9 @@ return CheckYield]]></ProtectedString>
 
     describe("Rosyn.Register", function()
         it("should accept standard arguments", function()
-            local Test = MakeClass()
-            Rosyn.Register("ArgsTestTag1", {Test})
+            expect(function()
+                Rosyn.Register("ArgsTestTag1", {MakeClass()})
+            end).never.to.throw()
         end)
 
         it("should asynchronously register", function()
@@ -6935,15 +6895,18 @@ return CheckYield]]></ProtectedString>
             function Test:Initial()
                 expect(self.Root).to.never.equal(nil)
                 DidInit = true
-                task.wait(2)
+                task.wait(0.1)
             end
 
             local Tagged = MakeTestInstance({"AsyncTestTag1"}, Workspace)
-            local Time = os.clock()
+            local Complete = false
 
+            task.spawn(function()
                 Rosyn.Register("AsyncTestTag1", {Test})
-                expect((os.clock() - Time) < 1/120).to.equal(true)
+                Complete = true
+            end)
 
+            expect(Complete).to.equal(true)
             expect(DidInit).to.equal(true)
             Tagged:Destroy()
         end)
@@ -6983,6 +6946,7 @@ return CheckYield]]></ProtectedString>
 
             Rosyn.Register("DestroyTestTag1", {Test})
             local Inst = MakeTestInstance({"DestroyTestTag1"}, Workspace)
+            expect(DidDestroy).to.equal(false)
             Inst:Destroy()
             expect(DidDestroy).to.equal(true)
         end)
@@ -6997,8 +6961,6 @@ return CheckYield]]></ProtectedString>
 
             expect(Rosyn.GetComponent(Inst, Test1)).to.be.ok()
             expect(Rosyn.GetComponent(Inst, Test2)).to.be.ok()
-
-            Inst:Destroy()
         end)
 
         it("should allow multiple tags on the same Instance", function()
@@ -7011,8 +6973,6 @@ return CheckYield]]></ProtectedString>
 
             expect(Rosyn.GetComponent(Inst, Test1)).to.be.ok()
             expect(Rosyn.GetComponent(Inst, Test2)).to.be.ok()
-
-            Inst:Destroy()
         end)
     end)
 
@@ -7030,8 +6990,6 @@ return CheckYield]]></ProtectedString>
             Rosyn.Register("GetComponent1", {Test1, Test2})
             expect(Rosyn.GetComponent(Inst, Test1)).to.be.ok()
             expect(Rosyn.GetComponent(Inst, Test2)).to.be.ok()
-
-            Inst:Destroy()
         end)
     end)
 
@@ -7042,8 +7000,6 @@ return CheckYield]]></ProtectedString>
 
             Rosyn.Register("AwaitComponentInit1", {Test1})
             expect(Rosyn.AwaitComponentInit(Inst, Test1)).to.be.ok()
-
-            Inst:Destroy()
         end)
 
         it("should await component", function()
@@ -7056,21 +7012,18 @@ return CheckYield]]></ProtectedString>
 
             local Result = Rosyn.AwaitComponentInit(Inst, Test1)
             expect(Result).to.be.ok()
-            Inst:Destroy()
         end)
 
-        --[[ it("should timeout and throw an error", function()
+        it("should timeout and throw an error", function()
             local Test1 = MakeClass()
             local Inst = MakeTestInstance({"AwaitComponentInit3"}, Workspace)
             local Time = os.clock()
 
             expect(function()
-                Rosyn.AwaitComponentInit(Inst, Test1, 2)
+                Rosyn.AwaitComponentInit(Inst, Test1, 0.2)
             end).to.throw()
 
-            expect((os.clock() - Time) >= 2).to.equal(true)
-
-            Inst:Destroy()
+            expect((os.clock() - Time) >= 0.2).to.equal(true)
         end)
 
         it("should timeout on Initial yield", function()
@@ -7078,11 +7031,11 @@ return CheckYield]]></ProtectedString>
             local Inst = MakeTestInstance({"AwaitComponentInit4"}, Workspace)
 
             function Test1:Initial()
-                task.wait(2)
+                task.wait(0.2)
             end
 
             expect(function()
-                Rosyn.AwaitComponentInit(Inst, Test1, 1)
+                Rosyn.AwaitComponentInit(Inst, Test1, 0.1)
             end).to.throw()
         end)
 
@@ -7090,7 +7043,7 @@ return CheckYield]]></ProtectedString>
             local Test1 = MakeClass()
 
             function Test1:Initial()
-                task.wait(2)
+                task.wait(0.1)
             end
 
             local Inst = MakeTestInstance({"AwaitComponentInit5"}, Workspace)
@@ -7110,79 +7063,81 @@ return CheckYield]]></ProtectedString>
 
         it("should correctly wait for Initial in a chain", function()
             local Inst = MakeTestInstance({"AwaitComponentInit6"}, Workspace)
-            local Chained = false
+            local Accumulation = 0
 
-                local Test1 = MakeClass()
+            local Test1 = MakeClass()
 
-                function Test1:Initial()
-                    task.wait(2)
-                end
+            function Test1:Initial()
+                task.wait(0.1)
+                Accumulation += 1
+            end
 
-                local Test2 = MakeClass()
+            local Test2 = MakeClass()
 
-                function Test2:Initial()
-                    Rosyn.AwaitComponentInit(Inst, Test1)
-                    task.wait(1)
-                end
+            function Test2:Initial()
+                Rosyn.AwaitComponentInit(Inst, Test1)
+                task.wait(0.1)
+                Accumulation += 1
+            end
 
-                local Test3 = MakeClass()
+            local Test3 = MakeClass()
 
-                function Test3:Initial()
-                    Rosyn.AwaitComponentInit(Inst, Test2)
-                    Chained = true
-                end
+            function Test3:Initial()
+                Rosyn.AwaitComponentInit(Inst, Test2)
+                Accumulation += 1
+            end
 
             Rosyn.Register("AwaitComponentInit6", {Test1, Test2, Test3})
 
-            expect(Chained).to.equal(false)
-            task.wait(2.5)
-            expect(Chained).to.equal(false)
-            task.wait(1)
-            expect(Chained).to.equal(true)
+            expect(Accumulation).to.equal(0)
+            task.wait(0.1)
+            expect(Accumulation).to.equal(1)
+            task.wait(0.1)
+            expect(Accumulation).to.equal(3)
         end)
 
         it("should correctly wait for Initial in a chain with errors", function()
             local Inst = MakeTestInstance({"AwaitComponentInit7"}, Workspace)
-            local Chained = false
+            local Accumulation = 0
 
-                local Test1 = MakeClass()
+            local Test1 = MakeClass()
 
-                function Test1:Initial()
-                    task.wait(2)
-                    error("Test")
-                end
+            function Test1:Initial()
+                task.wait(0.1)
+                Accumulation += 1
+                error("Test")
+            end
 
-                local Test2 = MakeClass()
+            local Test2 = MakeClass()
 
-                function Test2:Initial()
-                    Rosyn.AwaitComponentInit(Inst, Test1)
-                    task.wait(1)
-                end
+            function Test2:Initial()
+                Rosyn.AwaitComponentInit(Inst, Test1)
+                task.wait(0.1)
+                Accumulation += 1
+            end
 
-                local Test3 = MakeClass()
+            local Test3 = MakeClass()
 
-                function Test3:Initial()
-                    Rosyn.AwaitComponentInit(Inst, Test2)
-                    Chained = true
-                end
+            function Test3:Initial()
+                Rosyn.AwaitComponentInit(Inst, Test2)
+                Accumulation += 1
+            end
 
             Rosyn.Register("AwaitComponentInit7", {Test1, Test2, Test3})
 
-            expect(Chained).to.equal(false)
-            task.wait(2.5)
-            expect(Chained).to.equal(false)
-            task.wait(1)
-            expect(Chained).to.equal(true)
-        end) ]]
+            expect(Accumulation).to.equal(0)
+            task.wait(0.1)
+            expect(Accumulation).to.equal(1)
+            task.wait(0.1)
+            expect(Accumulation).to.equal(3)
+        end)
     end)
 
-    --[[ describe("Rosyn.GetComponentFromDescendant", function()
+    describe("Rosyn.GetComponentFromDescendant", function()
         it("should return nil where no component present", function()
-            local Inst = MakeTestInstance({})
+            local Inst = MakeTestInstance({}, Workspace)
             local Test1 = MakeClass()
             expect(Rosyn.GetComponentFromDescendant(Inst, Test1)).never.to.be.ok()
-
-            Inst:Destroy()
         end)
 
         it("should return a component when component present", function()
@@ -7194,8 +7149,6 @@ return CheckYield]]></ProtectedString>
 
             expect(Rosyn.GetComponentFromDescendant(Inst1, Test1)).to.be.ok()
             expect(Rosyn.GetComponentFromDescendant(Inst2, Test1)).to.be.ok()
-
-            Inst1:Destroy()
         end)
     end)
 
@@ -7214,9 +7167,8 @@ return CheckYield]]></ProtectedString>
             local InstanceCount = Count(GotInstances)
             expect(InstanceCount == 5).to.equal(true)
 
-            for Item in pairs(GotInstances) do
+            for Item in GotInstances do
                 expect(Instances[Item]).to.be.ok()
-                Item:Destroy()
             end
         end)
     end)
@@ -7236,38 +7188,63 @@ return CheckYield]]></ProtectedString>
             local ComponentCount = Count(GotComponents)
             expect(ComponentCount == 5).to.equal(true)
 
-            for Component in pairs(GotComponents) do
+            for Component in GotComponents do
                 expect(Instances[Component.Root]).to.be.ok()
-                Component.Root:Destroy()
             end
         end)
     end)
 
     describe("Rosyn.GetComponentsFromInstance", function()
-        -- TODO
-    end) ]]
+        it("should return the components on a given Instance", function()
+            local Test1 = MakeClass()
+            local Test2 = MakeClass()
 
-    -- TODO:
-    -- Constructor & destructor yield tests
-    -- Object lock tests
+            local Inst = MakeTestInstance({"GetComponentsFromInstance1", "GetComponentsFromInstance2"}, Workspace)
+            Rosyn.Register("GetComponentsFromInstance1", {Test1})
+            Rosyn.Register("GetComponentsFromInstance2", {Test2})
+
+            local Components = Rosyn.GetComponentsFromInstance(Inst)
+            expect(Count(Components) == 2).to.equal(true)
+            expect(Components[Test1]).to.be.ok()
+            expect(Components[Test1]).to.equal(Rosyn.GetComponent(Inst, Test1))
+            expect(Components[Test2]).to.be.ok()
+            expect(Components[Test2]).to.equal(Rosyn.GetComponent(Inst, Test2))
+        end)
+
+        it("should return the components on a given Instance, even if uninitialized", function()
+            local Test1 = MakeClass()
+
+            function Test1:Initial()
+                task.wait(0.2)
+            end
+
+            local Inst = MakeTestInstance({"GetComponentsFromInstance3"}, Workspace)
+            Rosyn.Register("GetComponentsFromInstance3", {Test1})
+
+            local Components = Rosyn.GetComponentsFromInstance(Inst)
+            expect(Count(Components) == 1).to.equal(true)
+            expect(Components[Test1]).to.be.ok()
+            expect(Components[Test1]).to.equal(Rosyn.GetComponent(Inst, Test1))
+        end)
+    end)
 end]]></ProtectedString>
 					<int64 name="SourceAssetId">-1</int64>
 					<BinaryString name="Tags"></BinaryString>
-					<UniqueId name="UniqueId">32aa2190bee3440c02ca72670002c624</UniqueId>
+					<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb93</UniqueId>
 				</Properties>
 			</Item>
 		</Item>
 	</Item>
-	<Item class="TweenService" referent="RBX5852A8011D7446E095A62BDAAE5DE3D2">
+	<Item class="TweenService" referent="RBX1F4015335F96492792E2497516570039">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">TweenService</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fae4</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fae4</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="MaterialService" referent="RBX6E8AD36734B14417AC9861F97422EFF8">
+	<Item class="MaterialService" referent="RBXC7D1342D17B94B87B1DD27D293AEB34C">
 		<Properties>
 			<string name="AsphaltName">Asphalt</string>
 			<BinaryString name="AttributesSerialize"></BinaryString>
@@ -7303,13 +7280,13 @@ end]]></ProtectedString>
 			<string name="SnowName">Snow</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fae5</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fae5</UniqueId>
 			<bool name="Use2022MaterialsXml">false</bool>
 			<string name="WoodName">Wood</string>
 			<string name="WoodPlanksName">WoodPlanks</string>
 		</Properties>
 	</Item>
-	<Item class="TextChatService" referent="RBXBCEC868F57AB4D18994DD537D29B7C9F">
+	<Item class="TextChatService" referent="RBXF974F61D339B4E5EB9C3C888A8F44010">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<token name="ChatVersion">0</token>
@@ -7318,19 +7295,19 @@ end]]></ProtectedString>
 			<string name="Name">TextChatService</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fae6</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fae6</UniqueId>
 		</Properties>
-		<Item class="ChatWindowConfiguration" referent="RBX21AAA531990747C5A737DB3E1ABFCF9B">
+		<Item class="ChatWindowConfiguration" referent="RBX0AC624924DFC4280BFEBE913CE3EFD67">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="Enabled">true</bool>
 				<string name="Name">ChatWindowConfiguration</string>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
-				<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb97</UniqueId>
+				<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb97</UniqueId>
 			</Properties>
 		</Item>
-		<Item class="ChatInputBarConfiguration" referent="RBX8DC5883F15194A3D8EEDA1884231778D">
+		<Item class="ChatInputBarConfiguration" referent="RBXCB9273AEAA4F4301AAC2A6CFE6F6CE2A">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<bool name="Enabled">true</bool>
@@ -7338,20 +7315,20 @@ end]]></ProtectedString>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 				<Ref name="TargetTextChannel">null</Ref>
-				<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb98</UniqueId>
+				<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb98</UniqueId>
 			</Properties>
 		</Item>
 	</Item>
-	<Item class="PermissionsService" referent="RBX09DA9BE71BE04A7393A5B5E1CA905F95">
+	<Item class="PermissionsService" referent="RBX83FAF86715A9455EA617281A413CBFB3">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">PermissionsService</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001faea</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001faea</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="PlayerEmulatorService" referent="RBX74CB4BB97648434E9AB07AAE3D49A88C">
+	<Item class="PlayerEmulatorService" referent="RBX4AC8A7A38495450C9DE4F1CB355DE6B8">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<bool name="CustomPoliciesEnabled">false</bool>
@@ -7362,10 +7339,10 @@ end]]></ProtectedString>
 			<BinaryString name="SerializedEmulatedPolicyInfo"></BinaryString>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001faec</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001faec</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="StudioData" referent="RBXCB5B292A005C4C6EA04961C85FED615A">
+	<Item class="StudioData" referent="RBXB3ECEDD80E6541DBAD94FD1FEC98FF67">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<int64 name="CommitInflightAuthorId">0</int64>
@@ -7377,10 +7354,10 @@ end]]></ProtectedString>
 			<int64 name="SrcPlaceId">0</int64>
 			<int64 name="SrcUniverseId">0</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001faef</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001faef</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="StarterPlayer" referent="RBX2F12049D11DF489EA4DFCEBB0157CEC9">
+	<Item class="StarterPlayer" referent="RBXD4A580D2097546CC97CD629F9AB30C86">
 		<Properties>
 			<bool name="AllowCustomAnimations">true</bool>
 			<BinaryString name="AttributesSerialize"></BinaryString>
@@ -7423,38 +7400,38 @@ end]]></ProtectedString>
 			<float name="NameDisplayDistance">100</float>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001faf0</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001faf0</UniqueId>
 			<bool name="UserEmotesEnabled">true</bool>
 		</Properties>
-		<Item class="StarterPlayerScripts" referent="RBX4E0D2B1F5B534CE4A0117BF8ACD8D24F">
+		<Item class="StarterPlayerScripts" referent="RBXB00ADF06AF9F4DE1BFF36B69870C8709">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<string name="Name">StarterPlayerScripts</string>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
-				<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb95</UniqueId>
+				<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb95</UniqueId>
 			</Properties>
 		</Item>
-		<Item class="StarterCharacterScripts" referent="RBXDE444A1582BD4DF3B54DACA8A3D69114">
+		<Item class="StarterCharacterScripts" referent="RBX659EE3982D2C40739C71293258BDA5D1">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<string name="Name">StarterCharacterScripts</string>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
-				<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb96</UniqueId>
+				<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb96</UniqueId>
 			</Properties>
 		</Item>
 	</Item>
-	<Item class="StarterPack" referent="RBX8D5F31E4686C4A16AA40434B487EE7DE">
+	<Item class="StarterPack" referent="RBX2698E6E9C0C24F6A82BAA96FDB913DBE">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">StarterPack</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001faf1</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001faf1</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="StarterGui" referent="RBXB39CD3227F8A43369088E4AECA5AE420">
+	<Item class="StarterGui" referent="RBX1BA2014446FF4F4F99DCAEA03A63CDE4">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">StarterGui</string>
@@ -7463,56 +7440,56 @@ end]]></ProtectedString>
 			<bool name="ShowDevelopmentGui">true</bool>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001faf2</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001faf2</UniqueId>
 			<token name="VirtualCursorMode">0</token>
 		</Properties>
 	</Item>
-	<Item class="LocalizationService" referent="RBXA21ECC1C4C8B4EFDBADF261C7473F090">
+	<Item class="LocalizationService" referent="RBX149742CF709743DE9975BA33E6D43228">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">LocalizationService</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001faf4</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001faf4</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="TeleportService" referent="RBXC62FAC36718E4A81B558E8ABAFE13ADE">
+	<Item class="TeleportService" referent="RBX2622AAD8B53A4C82BF60F911E8E60663">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">Teleport Service</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001faf8</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001faf8</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="CollectionService" referent="RBX99A7B4F52EB74E5982DFCC77036811A5">
+	<Item class="CollectionService" referent="RBX186EAC3B878B4E51B538948531011AE6">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">CollectionService</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fafa</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fafa</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="PhysicsService" referent="RBXE63F0BFE99FC4895A1243DD48DBFFFBD">
+	<Item class="PhysicsService" referent="RBXEEFB1F9448984A8BAC12C3E557E37D41">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">PhysicsService</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fafb</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fafb</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="Geometry" referent="RBX3A1BF31ED5E24BB5A45D3F1FD7A51C3A">
+	<Item class="Geometry" referent="RBX33DEF9981F844757BBFA5A62B29E4BB2">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">Geometry</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fafd</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fafd</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="InsertService" referent="RBXF349FD5783EC4C5AAAD64433D0BD6FA5">
+	<Item class="InsertService" referent="RBX7C54F97D7D0F46AEB5577DC22CA250E4">
 		<Properties>
 			<bool name="AllowClientInsertModels">false</bool>
 			<bool name="AllowInsertFreeModels">false</bool>
@@ -7520,158 +7497,158 @@ end]]></ProtectedString>
 			<string name="Name">InsertService</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001faff</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001faff</UniqueId>
 		</Properties>
-		<Item class="StringValue" referent="RBX836BE12000BF47A7B531AE939FF94721">
+		<Item class="StringValue" referent="RBX27E1E6ADF52443549D8036B810E32CF4">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
 				<string name="Name">InsertionHash</string>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
-				<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280002c51b</UniqueId>
-				<string name="Value">{1BA2381E-2C51-42E4-A981-99962DC2D8B0}</string>
+				<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870002c5c9</UniqueId>
+				<string name="Value">{0AB38E94-3FB6-4E22-A3E3-E341DC4A2E17}</string>
 			</Properties>
 		</Item>
 	</Item>
-	<Item class="GamePassService" referent="RBX4B028E98D30C437CAE8A9A7F21826C03">
+	<Item class="GamePassService" referent="RBXE87698A586594B6AB976A7DE95FC51F7">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">GamePassService</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb00</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb00</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="Debris" referent="RBXEC58AC7565CE4223A65B44374A5A6586">
+	<Item class="Debris" referent="RBXC5AB05BF3D6649A29FF1851F21CE6172">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<int name="MaxItems">1000</int>
 			<string name="Name">Debris</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb01</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb01</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="CookiesService" referent="RBXC912EEA58D824989BA7A2A756D0E150C">
+	<Item class="CookiesService" referent="RBX63DEEF90D0944CD5B9EBFB5EA35D4571">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">CookiesService</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb02</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb02</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="VRService" referent="RBX5FA2985121FF4873B55519BC8B3088F6">
+	<Item class="VRService" referent="RBX23F05276E1554F73A610B6482CEA8DA6">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">VRService</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb0c</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb0c</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="ContextActionService" referent="RBXA6B113A024E14004B20DB6F512093DA6">
+	<Item class="ContextActionService" referent="RBX5FFE85BF1664491EBC13C6990252DCAC">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">ContextActionService</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb0e</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb0e</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="ScriptService" referent="RBX66F779CAB3AE4B01A842D13164808453">
+	<Item class="ScriptService" referent="RBX0A10B46489C74594A11CAB588C5B9101">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">Instance</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb10</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb10</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="AssetService" referent="RBX70A53551640441B4BC397369E716F10E">
+	<Item class="AssetService" referent="RBX3BF8EF3FD66B4710B018F1F2A8083EBE">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">AssetService</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb11</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb11</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="TouchInputService" referent="RBX075FF8F86670453DAA2C6C7EB11635A2">
+	<Item class="TouchInputService" referent="RBX0ED015762B2E4757ABA39C9EE771B528">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">TouchInputService</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb12</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb12</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="AnalyticsService" referent="RBX3E3B9E4D53204B7EB14C5A361AAD8735">
+	<Item class="AnalyticsService" referent="RBXE02F9D928E4043F98E6924C30ACBF474">
 		<Properties>
 			<string name="ApiKey"></string>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">AnalyticsService</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb15</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb15</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="Selection" referent="RBX014515452EDB41A7B2D2228E996B9960">
+	<Item class="Selection" referent="RBX954BC10FBCAB4F53B692700C0E3CB38C">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">Selection</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb18</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb18</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="ServerScriptService" referent="RBX128A9583A9B4444FB088FE9D5882E301">
+	<Item class="ServerScriptService" referent="RBX267E62CF741A4824B3594728051D8A4E">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<bool name="LoadStringEnabled">false</bool>
 			<string name="Name">ServerScriptService</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb1a</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb1a</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="ServerStorage" referent="RBXA471B66A6EE641CAB895CA4138058537">
+	<Item class="ServerStorage" referent="RBX5ECE8B67DCD14AA1B10BFFACB22853CE">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">ServerStorage</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb1b</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb1b</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="ReplicatedStorage" referent="RBX8CAE4E51C4D34FEEB60A4BC9C83BE64A">
+	<Item class="ReplicatedStorage" referent="RBX92A27F5273BD4BA4941AA961C4E5E932">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">ReplicatedStorage</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb1c</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb1c</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="LuaWebService" referent="RBX1D45621F20CF480BBBCD92253B3E6216">
+	<Item class="LuaWebService" referent="RBX958521C84CA14445A83DD5F9A9A84728">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">Instance</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb23</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb23</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="ProcessInstancePhysicsService" referent="RBXB95F19F351094DF386B21F5F4ABCDB89">
+	<Item class="ProcessInstancePhysicsService" referent="RBX6165B3566E734B3887184358D4231967">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">ProcessInstancePhysicsService</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb24</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb24</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="Lighting" referent="RBX357D747702584B4A9AB59348582DBDA5">
+	<Item class="Lighting" referent="RBX67E195FB36A94A449C9256AE21181684">
 		<Properties>
 			<Color3 name="Ambient">
 				<R>0.5</R>
@@ -7714,56 +7691,56 @@ end]]></ProtectedString>
 			<BinaryString name="Tags"></BinaryString>
 			<token name="Technology">2</token>
 			<string name="TimeOfDay">14:00:00</string>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb50</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb50</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="LodDataService" referent="RBX4F37B93B93EF4EE0A9AD3B136C3BA793">
+	<Item class="LodDataService" referent="RBX6C07EE5F237C413AA0DBB74027087648">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">Instance</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280001fb53</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870001fb53</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="HttpService" referent="RBX99C2FE13486741D5978058B2C900A102">
+	<Item class="HttpService" referent="RBX2DC68CEE874247A7B504643FB2607CC8">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<bool name="HttpEnabled">false</bool>
 			<string name="Name">HttpService</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280002675e</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab887000285af</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="Teams" referent="RBX3DFA0EFF2A94419AB9117BE6C418D77F">
+	<Item class="Teams" referent="RBX0D68120F328647A18E99304E947ED948">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">Teams</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280002b3c1</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870002b3c1</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="VirtualInputManager" referent="RBX2E56871F874A471B97A4F896EC721236">
+	<Item class="VirtualInputManager" referent="RBX8B0BC75717534DB7B3B7C540FD92B414">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">VirtualInputManager</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280002b3df</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870002b3df</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="LanguageService" referent="RBX213A05893E12478991F8780EED908F12">
+	<Item class="LanguageService" referent="RBX8C002E35E9814E128446DA274FD5A429">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<string name="Name">LanguageService</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280002b61a</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870002b61a</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="ProximityPromptService" referent="RBX7F8F663B5C82428786E7D9FF2F6E927D">
+	<Item class="ProximityPromptService" referent="RBX7E87976994E244EA92E0AE19281CB188">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<bool name="Enabled">true</bool>
@@ -7771,10 +7748,10 @@ end]]></ProtectedString>
 			<string name="Name">ProximityPromptService</string>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280002b680</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870002b66b</UniqueId>
 		</Properties>
 	</Item>
-	<Item class="TestService" referent="RBX43ED9065A68E4812A5E8F0B17EBDB1BB">
+	<Item class="TestService" referent="RBX93D9ABA0F0A443FDADD1BC0273823BAB">
 		<Properties>
 			<BinaryString name="AttributesSerialize"></BinaryString>
 			<bool name="AutoRuns">true</bool>
@@ -7789,7 +7766,7 @@ end]]></ProtectedString>
 			<int64 name="SourceAssetId">-1</int64>
 			<BinaryString name="Tags"></BinaryString>
 			<double name="Timeout">10</double>
-			<UniqueId name="UniqueId">2d752e57c6c4b76f02ca5c280002c560</UniqueId>
+			<UniqueId name="UniqueId">773f4ef5d5401ac302cab8870002c659</UniqueId>
 		</Properties>
 	</Item>
 	<SharedStrings>

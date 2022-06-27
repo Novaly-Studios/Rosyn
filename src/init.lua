@@ -1,11 +1,10 @@
 local CollectionService = game:GetService("CollectionService")
-local ReplicatedFirst = game:GetService("ReplicatedFirst")
 local TestService = game:GetService("TestService")
 
---local CheckYield = ReplicatedFirst:WaitForChild("") --require(script:WaitForChild("CheckYield"))
-local TypeGuard = require(ReplicatedFirst:WaitForChild("TypeGuard")) --require(script.Parent:WaitForChild("TypeGuard"))
-local Cleaner = require(ReplicatedFirst:WaitForChild("Cleaner")) --require(script.Parent:WaitForChild("Cleaner"))
-local XSignal = require(ReplicatedFirst:WaitForChild("XSignal")) --require(script.Parent:WaitForChild("XSignal"))
+local CheckYield = require(script:WaitForChild("CheckYield"))
+local TypeGuard = require(script.Parent:WaitForChild("TypeGuard"))
+local Cleaner = require(script.Parent:WaitForChild("Cleaner"))
+local XSignal = require(script.Parent:WaitForChild("XSignal"))
 
 type XSignal<T> = XSignal.XSignal<T>
 
@@ -39,7 +38,7 @@ local WARN_COMPONENT_INFINITE_WAIT = "Potential infinite wait on (\n\tObject = '
 
 local DESTROY_SUFFIX = ".Destroy"
 local MEMORY_TAG_SUFFIX = ":Initial()"
-local DIAGNOSIS_TAG_PREFIX ="Component."
+local DIAGNOSIS_TAG_PREFIX = "Component."
 
 local EMPTY_STRING = ""
 
@@ -360,11 +359,9 @@ function Rosyn._AddComponent(Object: Instance, ComponentClass)
 
     debug.profilebegin(DiagnosisTag)
         ---------------------------------------------------------------------------------------------------------
-        --[[ local Yielded, NewComponent = CheckYield(function()
+        local Yielded, NewComponent = CheckYield(function()
             return ComponentClass.new(Object)
-        end) ]]
-        local Yielded = false
-        local NewComponent = ComponentClass.new(Object)
+        end)
 
         assert(not Yielded, ERR_COMPONENT_NEW_YIELDED:format(ComponentName, Object:GetFullName()))
 
@@ -495,9 +492,9 @@ function Rosyn._RemoveComponent(Object: Instance, ComponentClass)
     debug.profilebegin(DiagnosisTag .. DESTROY_SUFFIX)
 
     if (ExistingComponent.Destroy) then
-        local Yielded = false--CheckYield(function()
+        local Yielded = CheckYield(function()
             ExistingComponent:Destroy()
-        --end)
+        end)
         assert(not Yielded, ERR_COMPONENT_DESTROY_YIELDED:format(ComponentName, Object:GetFullName()))
     end
 
@@ -606,43 +603,5 @@ function Rosyn._Invariant()
 
     return true
 end
-
---[[ local function MakeClass()
-    local Class = {}
-    Class.__index = Class
-    Class.Type = "Class"
-
-    function Class.new(Root)
-        return setmetatable({
-            Root = Root;
-        }, Class)
-    end
-
-    function Class:Initial() end
-    function Class:Destroy() end
-
-    return Class
-end
-
-local function MakeTestInstance(Tags, Parent)
-    local Test = Instance.new("Model")
-
-    for _, Tag in Tags do
-        CollectionService:AddTag(Test, Tag)
-    end
-
-    Test.Parent = Parent
-    return Test
-end
-
-local Test1 = MakeClass()
-local Inst = MakeTestInstance({"AwaitComponentInit2"}, workspace)
-
-task.delay(1, function()
-    Rosyn.Register("AwaitComponentInit2", {Test1})
-end)
-
-print(">>>", Rosyn.AwaitComponentInit(Inst, Test1))
-Inst:Destroy() ]]
 
 return Rosyn
