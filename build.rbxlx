@@ -59,6 +59,7 @@
 			<BinaryString name="Tags"></BinaryString>
 			<bool name="TerrainWeldsFixed">true</bool>
 			<bool name="TouchesUseCollisionGroups">false</bool>
+			<token name="UnionsScaleNonuniformly">0</token>
 			<UniqueId name="UniqueId">3382962fefa0d55f02cabcb70001e0ea</UniqueId>
 			<OptionalCoordinateFrame name="WorldPivotData">
 				<CFrame>
@@ -6206,6 +6207,7 @@ local ERR_COMPONENT_NEW_YIELDED = "Component constructor %s yielded or threw an 
 local ERR_ITEM_ALREADY_DESTROYED = "Already destroyed!"
 local ERR_COMPONENT_ALREADY_PRESENT = "Component %s already present on %s"
 local ERR_COMPONENT_DESTROY_YIELDED = "Component destructor %s yielded or threw an error on %s"
+local ERR_COMPONENT_INSTANCE_NOT_FOUND = "Expected component '%s' to exist on Instance '%s'"
 local WARN_COMPONENT_LIFECYCLE_ALREDY_ENDED = "Component lifecycle ended before Initial call completed - %s on %s"
 
 local WARN_MULTIPLE_REGISTER = "Register attempted to create duplicate component: %s\n\n%s"
@@ -6405,6 +6407,21 @@ function Rosyn.GetComponent<T>(Object: Instance, ComponentClass: T): T
     return ComponentsForObject and ComponentsForObject[ComponentClass] or nil
 end
 
+local ExpectComponentParams = TypeGuard.Params(ValidGameObject, ValidComponentClass)
+--- Asserts that a component exists on a given Instance.
+function Rosyn.ExpectComponent<T>(Object: Instance, ComponentClass: T)
+    if (VALIDATE_PARAMS) then
+        ExpectComponentParams(Object, ComponentClass)
+    end
+
+    local Component = Rosyn.GetComponent(Object, ComponentClass)
+
+    if (Component == nil) then
+        error(ERR_COMPONENT_INSTANCE_NOT_FOUND:format(Rosyn.GetComponentName(ComponentClass), Object))
+    end
+
+    return Component
+end
 
 local AwaitComponentInitParams = TypeGuard.Params(ValidGameObject, ValidComponentClass, TypeGuard.Number():Optional())
 --[[
@@ -6997,6 +7014,26 @@ return CheckYield]]></ProtectedString>
             Rosyn.Register("GetComponent1", {Test1, Test2})
             expect(Rosyn.GetComponent(Inst, Test1)).to.be.ok()
             expect(Rosyn.GetComponent(Inst, Test2)).to.be.ok()
+        end)
+    end)
+
+    describe("Rosyn.ExpectComponent", function()
+        it("should throw an error where no component present", function()
+            local Test = MakeClass()
+
+            expect(function()
+                Rosyn.ExpectComponent(Workspace, Test)
+            end).to.throw()
+        end)
+
+        it("should return a component when component present", function()
+            local Test1 = MakeClass()
+            local Test2 = MakeClass()
+            local Inst = MakeTestInstance({"ExpectComponent1"}, Workspace)
+
+            Rosyn.Register("ExpectComponent1", {Test1, Test2})
+            expect(Rosyn.ExpectComponent(Inst, Test1)).to.be.ok()
+            expect(Rosyn.ExpectComponent(Inst, Test2)).to.be.ok()
         end)
     end)
 

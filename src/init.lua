@@ -28,6 +28,7 @@ local ERR_COMPONENT_NEW_YIELDED = "Component constructor %s yielded or threw an 
 local ERR_ITEM_ALREADY_DESTROYED = "Already destroyed!"
 local ERR_COMPONENT_ALREADY_PRESENT = "Component %s already present on %s"
 local ERR_COMPONENT_DESTROY_YIELDED = "Component destructor %s yielded or threw an error on %s"
+local ERR_COMPONENT_INSTANCE_NOT_FOUND = "Expected component '%s' to exist on Instance '%s'"
 local WARN_COMPONENT_LIFECYCLE_ALREDY_ENDED = "Component lifecycle ended before Initial call completed - %s on %s"
 
 local WARN_MULTIPLE_REGISTER = "Register attempted to create duplicate component: %s\n\n%s"
@@ -70,30 +71,14 @@ local _ComponentClassInitializedEvents = {}
 ]]
 local Rosyn = {
     -- Associations between Instances, component classes, and component instances, to ensure immediate lookup
-
-    --- Map of tagged Instances as keys with values of Array<ComponentClass>
-    -- @usage InstanceToComponents = {Instance = {ComponentClass1 = ComponentInstance1, ComponentClass2 = ComponentInstance2, ...}, ...}
     InstanceToComponents = _InstanceToComponents;
-    --- Map of ComponentClasses as keys with values of Array<Instance>
-    -- @usage ComponentClassToInstances = {ComponentClass = {Instance1 = true, Instance2 = true, ...}, ...}
     ComponentClassToInstances = _ComponentClassToInstances;
-    --- Map of Uninitialized Component Classes as keys with values of Array<individual Class Instances>
-    -- @usage ComponentClassToComponents = {ComponentClass = {ComponentInstance1 = true, ComponentInstance2 = true, ...}, ...}
     ComponentClassToComponents = _ComponentClassToComponents;
 
     -- Events related to component classes
-
-    --- Map of initialized Component Classes with values of Component Added Signals
-    -- @usage ComponentClassAddedEvents = {ComponentClass1 = Event1, ...}
     ComponentClassAddedEvents = _ComponentClassAddedEvents;
-    --- Map of initialized Component Classes with values of Component Removed Signals
-    -- @usage ComponentClassRemovedEvents = {ComponentClass1 = Event1, ...}
     ComponentClassRemovedEvents = _ComponentClassRemovedEvents;
-    --- Map of initialized Component Classes with values of Component Initialized Signals
-    -- @usage ComponentClassInitializedEvents = {ComponentClass1 = Event1, ...}
     ComponentClassInitializedEvents = _ComponentClassInitializedEvents;
-    --- Signal for failed Component Class initialization
-    -- @usage ComponentClassInitializationFailed:Fire(ComponentClassName: string, Instance: Instance, Error: string)
     ComponentClassInitializationFailed = XSignal.new();
 };
 
@@ -227,6 +212,21 @@ function Rosyn.GetComponent<T>(Object: Instance, ComponentClass: T): T
     return ComponentsForObject and ComponentsForObject[ComponentClass] or nil
 end
 
+local ExpectComponentParams = TypeGuard.Params(ValidGameObject, ValidComponentClass)
+--- Asserts that a component exists on a given Instance.
+function Rosyn.ExpectComponent<T>(Object: Instance, ComponentClass: T)
+    if (VALIDATE_PARAMS) then
+        ExpectComponentParams(Object, ComponentClass)
+    end
+
+    local Component = Rosyn.GetComponent(Object, ComponentClass)
+
+    if (Component == nil) then
+        error(ERR_COMPONENT_INSTANCE_NOT_FOUND:format(Rosyn.GetComponentName(ComponentClass), Object))
+    end
+
+    return Component
+end
 
 local AwaitComponentInitParams = TypeGuard.Params(ValidGameObject, ValidComponentClass, TypeGuard.Number():Optional())
 --[[
@@ -253,7 +253,7 @@ function Rosyn.AwaitComponentInit<T>(Object: Instance, ComponentClass: T, Timeou
     local OnInitialized = XSignal.new()
     local ComponentName = Rosyn.GetComponentName(ComponentClass)
 
-    local InitializedConnection; InitializedConnection = Rosyn.GetInitializedEvent(ComponentClass):Connect(function(TargetInstance: Instance)
+    local InitializedConnection; InitializedConnection = Rosyn.GetComponentInstanceInitializedSignal(ComponentClass):Connect(function(TargetInstance: Instance)
         if (TargetInstance ~= Object) then
             return
         end
@@ -401,7 +401,7 @@ function Rosyn._AddComponent(Object: Instance, ComponentClass)
         ---------------------------------------------------------------------------------------------------------
     debug.profileend()
 
-    Rosyn.GetAddedEvent(ComponentClass):Fire(Object)
+    Rosyn.GetComponentInstanceAddedSignal(ComponentClass):Fire(Object)
 
     -- Initialise component in separate coroutine
     task.spawn(function()
@@ -427,7 +427,7 @@ function Rosyn._AddComponent(Object: Instance, ComponentClass)
         end
 
         NewComponent._INITIALIZED = true
-        Rosyn.GetInitializedEvent(ComponentClass):Fire(Object)
+        Rosyn.GetComponentInstanceInitializedSignal(ComponentClass):Fire(Object)
         -- TODO: maybe we pcall and timeout the Initial and ensure Destroy is always called after
         -- Otherwise we have to use the "retroactive" cleaner pattern
     end)
@@ -486,7 +486,7 @@ function Rosyn._RemoveComponent(Object: Instance, ComponentClass)
         ---------------------------------------------------------------------------------------------------------
     debug.profileend()
 
-    Rosyn.GetRemovedEvent(ComponentClass):Fire(Object)
+    Rosyn.GetComponentInstanceRemovedSignal(ComponentClass):Fire(Object)
 
     -- Destroy component to let it clean stuff up
     debug.profilebegin(DiagnosisTag .. DESTROY_SUFFIX)
@@ -501,14 +501,14 @@ function Rosyn._RemoveComponent(Object: Instance, ComponentClass)
     debug.profileend()
 end
 
-local GetAddedEventParams = TypeGuard.Params(ValidComponentClass)
+local GetComponentInstanceAddedSignalParams = TypeGuard.Params(ValidComponentClass)
 --[[
     Obtains or creates a Signal which will fire when a component has been instantiated.
     @todo Refactor these 3 since they have a lot of repeated code
 ]]
-function Rosyn.GetAddedEvent(ComponentClass): XSignal<Instance>
+function Rosyn.GetComponentInstanceAddedSignal(ComponentClass): XSignal<Instance>
     if (VALIDATE_PARAMS) then
-        GetAddedEventParams(ComponentClass)
+        GetComponentInstanceAddedSignalParams(ComponentClass)
     end
 
     local ComponentClassAddedEvents = Rosyn.ComponentClassAddedEvents
@@ -522,13 +522,13 @@ function Rosyn.GetAddedEvent(ComponentClass): XSignal<Instance>
     return AddedEvent
 end
 
-local GetRemovedEventParams = TypeGuard.Params(ValidComponentClass)
+local GetComponentInstanceRemovedSignalParams = TypeGuard.Params(ValidComponentClass)
 --[[--
     Obtains or creates a Signal which will fire when a component has been destroyed.
 ]]
-function Rosyn.GetRemovedEvent(ComponentClass): XSignal<Instance>
+function Rosyn.GetComponentInstanceRemovedSignal(ComponentClass): XSignal<Instance>
     if (VALIDATE_PARAMS) then
-        GetRemovedEventParams(ComponentClass)
+        GetComponentInstanceRemovedSignalParams(ComponentClass)
     end
 
     local ComponentClassRemovedEvents = Rosyn.ComponentClassRemovedEvents
@@ -542,13 +542,13 @@ function Rosyn.GetRemovedEvent(ComponentClass): XSignal<Instance>
     return RemovedEvent
 end
 
-local GetInitializedEventParams = TypeGuard.Params(ValidComponentClass)
+local GetComponentInstanceInitializedSignalParams = TypeGuard.Params(ValidComponentClass)
 --[[--
     Obtains or creates a Signal which will fire when a component has passed its initialization phase.
 ]]
-function Rosyn.GetInitializedEvent(ComponentClass): XSignal<Instance>
+function Rosyn.GetComponentInstanceInitializedSignal(ComponentClass): XSignal<Instance>
     if (VALIDATE_PARAMS) then
-        GetInitializedEventParams(ComponentClass)
+        GetComponentInstanceInitializedSignalParams(ComponentClass)
     end
 
     local ComponentClassInitializedEvents = Rosyn.ComponentClassInitializedEvents

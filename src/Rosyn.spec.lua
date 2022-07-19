@@ -176,6 +176,26 @@ return function()
         end)
     end)
 
+    describe("Rosyn.ExpectComponent", function()
+        it("should throw an error where no component present", function()
+            local Test = MakeClass()
+
+            expect(function()
+                Rosyn.ExpectComponent(Workspace, Test)
+            end).to.throw()
+        end)
+
+        it("should return a component when component present", function()
+            local Test1 = MakeClass()
+            local Test2 = MakeClass()
+            local Inst = MakeTestInstance({"ExpectComponent1"}, Workspace)
+
+            Rosyn.Register("ExpectComponent1", {Test1, Test2})
+            expect(Rosyn.ExpectComponent(Inst, Test1)).to.be.ok()
+            expect(Rosyn.ExpectComponent(Inst, Test2)).to.be.ok()
+        end)
+    end)
+
     describe("Rosyn.AwaitComponentInit", function()
         it("should immediately return component when present", function()
             local Test1 = MakeClass()
