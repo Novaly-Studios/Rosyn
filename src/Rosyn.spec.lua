@@ -742,11 +742,11 @@ return function()
                 DidDestroy = true
             end
 
-            local Inst = MakeTestInstance({"DestroySequence2"}, Workspace)
+            local Inst = MakeTestInstance({"DestroySequence3"}, Workspace)
 
             Rosyn.Register({
                 Components = {Test};
-                Collect = Rosyn.Collectors.Tags("DestroySequence2");
+                Collect = Rosyn.Collectors.Tags("DestroySequence3");
             })
 
             Inst:Destroy()
