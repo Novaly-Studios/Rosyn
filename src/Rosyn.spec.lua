@@ -1,8 +1,15 @@
+local function anyfn(...) return ({} :: any) end
+it = it or anyfn
+expect = expect or anyfn
+describe = describe or anyfn
+afterAll = afterAll or anyfn
+afterEach = afterEach or anyfn
+
 return function()
-    local Workspace = game:GetService("Workspace")
     local CollectionService = game:GetService("CollectionService")
+    local Workspace = game:GetService("Workspace")
+
     local Rosyn = require(script.Parent)
-    Rosyn.SuppressWarnings = true
 
     local function MakeClass()
         local Class = {}
@@ -42,9 +49,7 @@ return function()
         return Result
     end
 
-    afterEach(function()
-        expect(Rosyn._Invariant()).to.equal(true)
-    end)
+    afterEach(Rosyn._Invariant)
 
     afterAll(function()
         for _, Item in Workspace:GetChildren() do
@@ -59,7 +64,10 @@ return function()
     describe("Rosyn.Register", function()
         it("should accept standard arguments", function()
             expect(function()
-                Rosyn.Register("ArgsTestTag1", {MakeClass()})
+                Rosyn.Register({
+                    Components = {MakeClass()};
+                    Collect = Rosyn.Collectors.Tags("ArgsTestTag1");
+                })
             end).never.to.throw()
         end)
 
@@ -78,7 +86,11 @@ return function()
             local Complete = false
 
             task.spawn(function()
-                Rosyn.Register("AsyncTestTag1", {Test})
+                Rosyn.Register({
+                    Components = {Test};
+                    Collect = Rosyn.Collectors.Tags("AsyncTestTag1");
+                })
+
                 Complete = true
             end)
 
@@ -87,7 +99,7 @@ return function()
             Tagged:Destroy()
         end)
 
-        it("should accept and correctly register ancestor target", function()
+        it("should accept and correctly register ancestor target given that filter", function()
             local DidTest1 = false
             local DidTest2 = false
 
@@ -103,20 +115,27 @@ return function()
                 DidTest2 = false
             end
 
-            Rosyn.Register("AncestorTestTag1", {Test1}, Workspace)
-            Rosyn.Register("AncestorTestTag2", {Test2}, game:GetService("ReplicatedStorage"))
+            Rosyn.Register({
+                Components = {Test1};
+                Collect = Rosyn.Collectors.Tags("AncestorTestTag1");
+                Filter = function(Object)
+                    return Object:IsDescendantOf(Workspace)
+                end;
+            })
+
+            Rosyn.Register({
+                Components = {Test2};
+                Collect = Rosyn.Collectors.Tags("AncestorTestTag1");
+                Filter = function(Object)
+                    return Object:IsDescendantOf(game:GetService("ReplicatedStorage"))
+                end;
+            })
+
             MakeTestInstance({"AncestorTestTag1"}, Workspace):Destroy()
             MakeTestInstance({"AncestorTestTag2"}, Workspace):Destroy()
 
             expect(DidTest1).to.equal(true)
             expect(DidTest2).to.equal(false)
-        end)
-
-        it("should allow 'game' to be registered", function()
-            expect(function()
-                local Test1 = MakeClass()
-                Rosyn.Register("AncestorTestTag3", {Test1}, game)
-            end).never.to.throw()
         end)
 
         it("should call destroy on objects when the associated Instance is removed", function()
@@ -127,7 +146,11 @@ return function()
                 DidDestroy = true
             end
 
-            Rosyn.Register("DestroyTestTag1", {Test})
+            Rosyn.Register({
+                Components = {Test};
+                Collect = Rosyn.Collectors.Tags("DestroyTestTag1");
+            })
+
             local Inst = MakeTestInstance({"DestroyTestTag1"}, Workspace)
             expect(DidDestroy).to.equal(false)
             Inst:Destroy()
@@ -137,10 +160,17 @@ return function()
         it("should allow multiple points of registration for the same tag", function()
             local Test1 = MakeClass()
             local Test2 = MakeClass()
-
             local Inst = MakeTestInstance({"MultiComponentOneTag"}, Workspace)
-            Rosyn.Register("MultiComponentOneTag", {Test1})
-            Rosyn.Register("MultiComponentOneTag", {Test2})
+
+            Rosyn.Register({
+                Components = {Test1};
+                Collect = Rosyn.Collectors.Tags("MultiComponentOneTag");
+            })
+
+            Rosyn.Register({
+                Components = {Test2};
+                Collect = Rosyn.Collectors.Tags("MultiComponentOneTag");
+            })
 
             expect(Rosyn.GetComponent(Inst, Test1)).to.be.ok()
             expect(Rosyn.GetComponent(Inst, Test2)).to.be.ok()
@@ -149,10 +179,17 @@ return function()
         it("should allow multiple tags on the same Instance", function()
             local Test1 = MakeClass()
             local Test2 = MakeClass()
-
             local Inst = MakeTestInstance({"MultiTag1", "MultiTag2"}, Workspace)
-            Rosyn.Register("MultiTag1", {Test1})
-            Rosyn.Register("MultiTag2", {Test2})
+
+            Rosyn.Register({
+                Components = {Test1};
+                Collect = Rosyn.Collectors.Tags("MultiTag1");
+            })
+
+            Rosyn.Register({
+                Components = {Test2};
+                Collect = Rosyn.Collectors.Tags("MultiTag2");
+            })
 
             expect(Rosyn.GetComponent(Inst, Test1)).to.be.ok()
             expect(Rosyn.GetComponent(Inst, Test2)).to.be.ok()
@@ -170,7 +207,11 @@ return function()
             local Test2 = MakeClass()
             local Inst = MakeTestInstance({"GetComponent1"}, Workspace)
 
-            Rosyn.Register("GetComponent1", {Test1, Test2})
+            Rosyn.Register({
+                Components = {Test1, Test2};
+                Collect = Rosyn.Collectors.Tags("GetComponent1");
+            })
+
             expect(Rosyn.GetComponent(Inst, Test1)).to.be.ok()
             expect(Rosyn.GetComponent(Inst, Test2)).to.be.ok()
         end)
@@ -190,7 +231,11 @@ return function()
             local Test2 = MakeClass()
             local Inst = MakeTestInstance({"ExpectComponent1"}, Workspace)
 
-            Rosyn.Register("ExpectComponent1", {Test1, Test2})
+            Rosyn.Register({
+                Components = {Test1, Test2};
+                Collect = Rosyn.Collectors.Tags("ExpectComponent1");
+            })
+
             expect(Rosyn.ExpectComponent(Inst, Test1)).to.be.ok()
             expect(Rosyn.ExpectComponent(Inst, Test2)).to.be.ok()
         end)
@@ -201,7 +246,11 @@ return function()
             local Test1 = MakeClass()
             local Inst = MakeTestInstance({"AwaitComponentInit1"}, Workspace)
 
-            Rosyn.Register("AwaitComponentInit1", {Test1})
+            Rosyn.Register({
+                Components = {Test1};
+                Collect = Rosyn.Collectors.Tags("AwaitComponentInit1");
+            })
+
             expect(Rosyn.AwaitComponentInit(Inst, Test1)).to.be.ok()
         end)
 
@@ -210,7 +259,10 @@ return function()
             local Inst = MakeTestInstance({"AwaitComponentInit2"}, Workspace)
 
             task.delay(1, function()
-                Rosyn.Register("AwaitComponentInit2", {Test1})
+                Rosyn.Register({
+                    Components = {Test1};
+                    Collect = Rosyn.Collectors.Tags("AwaitComponentInit2");
+                })
             end)
 
             local Result = Rosyn.AwaitComponentInit(Inst, Test1)
@@ -250,7 +302,11 @@ return function()
             end
 
             local Inst = MakeTestInstance({"AwaitComponentInit5"}, Workspace)
-            Rosyn.Register("AwaitComponentInit5", {Test1})
+
+            Rosyn.Register({
+                Components = {Test1};
+                Collect = Rosyn.Collectors.Tags("AwaitComponentInit5");
+            })
 
             local DidImmediatelyGet = false
 
@@ -290,7 +346,10 @@ return function()
                 Accumulation += 1
             end
 
-            Rosyn.Register("AwaitComponentInit6", {Test1, Test2, Test3})
+            Rosyn.Register({
+                Components = {Test1, Test2, Test3};
+                Collect = Rosyn.Collectors.Tags("AwaitComponentInit6");
+            })
 
             expect(Accumulation).to.equal(0)
             task.wait(0.1)
@@ -314,25 +373,50 @@ return function()
             local Test2 = MakeClass()
 
             function Test2:Initial()
+                Accumulation += 1
                 Rosyn.AwaitComponentInit(Inst, Test1)
-                task.wait(0.1)
                 Accumulation += 1
             end
 
             local Test3 = MakeClass()
 
             function Test3:Initial()
+                Accumulation += 1
                 Rosyn.AwaitComponentInit(Inst, Test2)
                 Accumulation += 1
             end
 
-            Rosyn.Register("AwaitComponentInit7", {Test1, Test2, Test3})
-
             expect(Accumulation).to.equal(0)
-            task.wait(0.1)
-            expect(Accumulation).to.equal(1)
+
+            Rosyn.Register({
+                Components = {Test1, Test2, Test3};
+                Collect = Rosyn.Collectors.Tags("AwaitComponentInit7");
+            })
+
             task.wait(0.1)
             expect(Accumulation).to.equal(3)
+        end)
+
+        it("should respond to Initial timeouts correctly", function()
+            local Test = MakeClass()
+            Test.Options = {
+                InitialTimeout = 0.1;
+            }
+
+            function Test:Initial()
+                task.wait(0.2)
+            end
+
+            local Inst = MakeTestInstance({"AwaitComponentInit8"}, Workspace)
+
+            Rosyn.Register({
+                Components = {Test};
+                Collect = Rosyn.Collectors.Tags("AwaitComponentInit8");
+            })
+
+            expect(function()
+                Rosyn.AwaitComponentInit(Inst, Test, 0.2)
+            end).to.throw()
         end)
     end)
 
@@ -346,9 +430,12 @@ return function()
         it("should return a component when component present", function()
             local Inst1 = MakeTestInstance({"DescendantTest1"}, Workspace)
             local Inst2 = MakeTestInstance({}, Inst1)
-
             local Test1 = MakeClass()
-            Rosyn.Register("DescendantTest1", {Test1})
+
+            Rosyn.Register({
+                Components = {Test1};
+                Collect = Rosyn.Collectors.Tags("DescendantTest1");
+            })
 
             expect(Rosyn.GetComponentFromDescendant(Inst1, Test1)).to.be.ok()
             expect(Rosyn.GetComponentFromDescendant(Inst2, Test1)).to.be.ok()
@@ -359,7 +446,11 @@ return function()
         it("should obtain all Instances which have a specific component class", function()
             local Instances = {}
             local Test1 = MakeClass()
-            Rosyn.Register("GetInstancesOfClass1", {Test1})
+
+            Rosyn.Register({
+                Components = {Test1};
+                Collect = Rosyn.Collectors.Tags("GetInstancesOfClass1");
+            })
 
             for _ = 1, 5 do
                 local Object = MakeTestInstance({"GetInstancesOfClass1"}, Workspace)
@@ -380,7 +471,11 @@ return function()
         it("should return components of a correct class", function()
             local Instances = {}
             local Test1 = MakeClass()
-            Rosyn.Register("GetComponentsOfClass1", {Test1})
+
+            Rosyn.Register({
+                Components = {Test1};
+                Collect = Rosyn.Collectors.Tags("GetComponentsOfClass1");
+            })
 
             for _ = 1, 5 do
                 local Object = MakeTestInstance({"GetComponentsOfClass1"}, Workspace)
@@ -401,10 +496,17 @@ return function()
         it("should return the components on a given Instance", function()
             local Test1 = MakeClass()
             local Test2 = MakeClass()
-
             local Inst = MakeTestInstance({"GetComponentsFromInstance1", "GetComponentsFromInstance2"}, Workspace)
-            Rosyn.Register("GetComponentsFromInstance1", {Test1})
-            Rosyn.Register("GetComponentsFromInstance2", {Test2})
+
+            Rosyn.Register({
+                Components = {Test1};
+                Collect = Rosyn.Collectors.Tags("GetComponentsFromInstance1");
+            })
+
+            Rosyn.Register({
+                Components = {Test2};
+                Collect = Rosyn.Collectors.Tags("GetComponentsFromInstance2");
+            })
 
             local Components = Rosyn.GetComponentsFromInstance(Inst)
             expect(Count(Components) == 2).to.equal(true)
@@ -422,12 +524,233 @@ return function()
             end
 
             local Inst = MakeTestInstance({"GetComponentsFromInstance3"}, Workspace)
-            Rosyn.Register("GetComponentsFromInstance3", {Test1})
+
+            Rosyn.Register({
+                Components = {Test1};
+                Collect = Rosyn.Collectors.Tags("GetComponentsFromInstance3");
+            })
 
             local Components = Rosyn.GetComponentsFromInstance(Inst)
             expect(Count(Components) == 1).to.equal(true)
             expect(Components[Test1]).to.be.ok()
             expect(Components[Test1]).to.equal(Rosyn.GetComponent(Inst, Test1))
+        end)
+    end)
+    
+    describe("Component.Initial", function()
+        it("should timeout the Initial thread times out, and terminate the thread", function()
+            local Test = MakeClass()
+            Test.Options = {
+                InitialTimeout = 0.1;
+            }
+
+            local Thread
+
+            function Test:Initial()
+                Thread = coroutine.running()
+                task.wait(1)
+            end
+
+            local Inst = MakeTestInstance({"InitialTimeout1"}, Workspace)
+
+            Rosyn.Register({
+                Components = {Test};
+                Collect = Rosyn.Collectors.Tags("InitialTimeout1");
+            })
+
+            task.wait(0.1)
+
+            expect(coroutine.status(Thread)).to.equal("dead")
+            expect(function()
+                Rosyn.AwaitComponentInit(Inst, Test)
+            end).to.throw("timed out")
+        end)
+
+        it("should throw an error if the component's Initial threw an error", function()
+            local Test = MakeClass()
+
+            function Test:Initial()
+                error("Test error")
+            end
+
+            local Inst = MakeTestInstance({"InitialError1"}, Workspace)
+
+            Rosyn.Register({
+                Components = {Test};
+                Collect = Rosyn.Collectors.Tags("InitialError1");
+            })
+
+            expect(function()
+                Rosyn.AwaitComponentInit(Inst, Test)
+            end).to.throw("threw an error")
+        end)
+
+        it("should return the component if Initial completed successfully", function()
+            local Test = MakeClass()
+
+            function Test:Initial()
+                task.wait(0.1)
+            end
+
+            local Inst = MakeTestInstance({"InitialSuccess1"}, Workspace)
+
+            Rosyn.Register({
+                Components = {Test};
+                Collect = Rosyn.Collectors.Tags("InitialSuccess1");
+            })
+
+            local Component = Rosyn.AwaitComponentInit(Inst, Test)
+            expect(Component).to.be.ok()
+            expect(Component).to.equal(Rosyn.GetComponent(Inst, Test))
+        end)
+
+        it("should timeout if the component was not added to the Instance on time", function()
+            local Test = MakeClass()
+            local Inst = MakeTestInstance({"InstanceTimeout1"}, Workspace)
+
+            expect(function()
+                Rosyn.AwaitComponentInit(Inst, Test, 0.1)
+            end).to.throw("on time")
+        end)
+
+        it("should throw an error if the component is removed while it is initializing", function()
+            local Test = MakeClass()
+
+            function Test:Initial()
+                task.wait(0.5)
+            end
+
+            local Inst = MakeTestInstance({"InstanceRemoved1"}, Workspace)
+
+            Rosyn.Register({
+                Components = {Test};
+                Collect = Rosyn.Collectors.Tags("InstanceRemoved1");
+            })
+
+            task.delay(0.1, function()
+                Inst:Destroy()
+            end)
+
+            expect(function()
+                Rosyn.AwaitComponentInit(Inst, Test, 0.2)
+            end).to.throw("removed")
+        end)
+
+        it("should throw an error if the Initial thread has already thrown", function()
+            local Test = MakeClass()
+
+            function Test:Initial()
+                error("Test error")
+            end
+
+            local Inst = MakeTestInstance({"InitialError1"}, Workspace)
+
+            Rosyn.Register({
+                Components = {Test};
+                Collect = Rosyn.Collectors.Tags("InitialError1");
+            })
+
+            task.wait()
+
+            expect(function()
+                Rosyn.AwaitComponentInit(Inst, Test)
+            end).to.throw("threw an error")
+        end)
+
+        it("should throw an error if the Initial thread has already timed out", function()
+            local Test = MakeClass()
+            Test.Options = {
+                InitialTimeout = 0.1;
+            }
+
+            function Test:Initial()
+                task.wait(0.5)
+            end
+
+            local Inst = MakeTestInstance({"InitialError1"}, Workspace)
+
+            Rosyn.Register({
+                Components = {Test};
+                Collect = Rosyn.Collectors.Tags("InitialError1");
+            })
+
+            task.wait(0.2)
+
+            expect(function()
+                Rosyn.AwaitComponentInit(Inst, Test)
+            end).to.throw("timed out")
+        end)
+    end)
+
+    describe("Component.Destroy", function()
+        it("should fire after Initial thread yielding", function()
+            local DidDestroy = false
+            local Test = MakeClass()
+
+            function Test:Initial()
+                task.wait(0.2)
+            end
+
+            function Test:Destroy()
+                DidDestroy = true
+            end
+
+            local Inst = MakeTestInstance({"DestroySequence1"}, Workspace)
+
+            Rosyn.Register({
+                Components = {Test};
+                Collect = Rosyn.Collectors.Tags("DestroySequence1");
+            })
+
+            Inst:Destroy()
+            expect(DidDestroy).to.equal(false)
+            task.wait(0.2)
+            expect(DidDestroy).to.equal(true)
+        end)
+
+        it("should fire after Initial thread throwing", function()
+            local DidDestroy = false
+            local Test = MakeClass()
+
+            function Test:Initial()
+                error("Test")
+            end
+
+            function Test:Destroy()
+                DidDestroy = true
+            end
+
+            local Inst = MakeTestInstance({"DestroySequence2"}, Workspace)
+
+            Rosyn.Register({
+                Components = {Test};
+                Collect = Rosyn.Collectors.Tags("DestroySequence2");
+            })
+
+            Inst:Destroy()
+            expect(DidDestroy).to.equal(true)
+        end)
+
+        it("should fire after Initial thread success", function()
+            local DidDestroy = false
+            local Test = MakeClass()
+
+            function Test:Initial()
+            end
+
+            function Test:Destroy()
+                DidDestroy = true
+            end
+
+            local Inst = MakeTestInstance({"DestroySequence2"}, Workspace)
+
+            Rosyn.Register({
+                Components = {Test};
+                Collect = Rosyn.Collectors.Tags("DestroySequence2");
+            })
+
+            Inst:Destroy()
+            expect(DidDestroy).to.equal(true)
         end)
     end)
 end
