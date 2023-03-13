@@ -86,11 +86,9 @@ local _ComponentClassToComponents = {}
 
 -- Events related to component classes
 local _ComponentClassAddedEvents = {}
-local _ComponentClassRemovedEvents = {}
 local _ComponentClassRemovingEvents = {}
-local _ComponentClassInitializedEvents = {}
 
-local _ComponentClassToCycleThread = {}
+-- local _ComponentClassToCycleThread = {}
 
 local _ComponentClassInitializationFailed = XSignal.new()
 
@@ -525,7 +523,7 @@ function Rosyn._AddComponent(Object: Instance, ComponentClass: ValidComponentCla
 
     -- TODO: CycleFilter to force pre-filtered components instead of (_ComponentClassToComponents[ComponentClass] or {})
     -- Cycles are timers on each component of a given class, executed synchronously for performance
-    if (ComponentClass.Cycle and not _ComponentClassToCycleThread[ComponentClass]) then
+    --[[ if (ComponentClass.Cycle and not _ComponentClassToCycleThread[ComponentClass]) then -- Untested, disabled
         local ProfileCycle = Rosyn._GetOption(ComponentClass, "ProfileCycle")
         local WaitTime = Rosyn._GetOption(ComponentClass, "CycleTime")
 
@@ -570,7 +568,7 @@ function Rosyn._AddComponent(Object: Instance, ComponentClass: ValidComponentCla
                 task.wait(WaitTime)
             end
         end)
-    end
+    end ]]
 
     local AddedSignal = Rosyn.GetAddedSignal(ComponentClass)
     AddedSignal:Fire(Object)
