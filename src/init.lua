@@ -495,15 +495,7 @@ function Rosyn._AddComponent(Object: Instance, ComponentClass: ValidComponentCla
     _ComponentsToMetadata[NewComponent] = Metadata
 
     Metadata.InitialThread = Async.SpawnTimed(Rosyn._GetOption(ComponentClass, "InitialTimeout") :: number, function(OnFinish)
-        local Debounce = false
-
         OnFinish(function(Success, Result)
-            -- Todo: Async library should never call OnFinish more than once, then debounce is not needed.
-            if (Debounce) then
-                return
-            end
-
-            Debounce = true
             Metadata.Initialized = Success
 
             if (Success) then
