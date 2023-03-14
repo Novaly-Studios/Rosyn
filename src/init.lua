@@ -518,7 +518,12 @@ function Rosyn._AddComponent(Object: Instance, ComponentClass: ValidComponentCla
             end
         end)
 
-        NewComponent:Initial()
+        local Success, Result = pcall(NewComponent.Initial, NewComponent)
+
+        if (not Success) then
+            task.spawn(error, `Component {ComponentName} failed to initialize on {Object:GetFullName()} with error: {Result}`)
+            Async.Cancel(coroutine.running(), Result)
+        end
     end)
 
     -- TODO: CycleFilter to force pre-filtered components instead of (_ComponentClassToComponents[ComponentClass] or {})
