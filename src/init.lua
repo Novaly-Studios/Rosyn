@@ -618,10 +618,6 @@ function Rosyn._RemoveComponent(Object: Instance, ComponentClass: ValidComponent
         error(`Component destructor {ComponentName} yielded or threw an error on {Object:GetFullName()}.`)
     end
 
-    if (Rosyn._GetOption(ComponentClass, "InitialTimeout") == 0.0001) then
-        print(">>>>>>>>>> JSGHGHJKGDHKJAHGKJ")
-    end
-
     Async.Cancel(Metadata.InitialThread, "ROSYN_DESTROY") -- This will terminate all descendant threads spawned in Initial, on component removal / destruction
     debug.profileend()
 end
