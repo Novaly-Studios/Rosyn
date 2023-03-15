@@ -10,6 +10,7 @@ return function()
     local Workspace = game:GetService("Workspace")
 
     local Rosyn = require(script.Parent)
+    local Async = require(script.Parent.Parent.Async)
 
     local function MakeClass()
         local Class = {}
@@ -680,6 +681,40 @@ return function()
                 Rosyn.AwaitComponentInit(Inst, Test)
             end).to.throw("timed out")
         end)
+
+        it("should not terminate all Async-spawned threads from the Initial thread on timeout", function()
+            local Test = MakeClass()
+            Test.Options = {
+                InitialTimeout = 0;
+            }
+
+            local Stage
+            local Thread
+
+            function Test:Initial()
+                Async.Spawn(function()
+                    Thread = coroutine.running()
+                    Stage = 1
+                    task.wait()
+                    task.wait()
+                    Stage = 2
+                end)
+            end
+
+            MakeTestInstance({"AsyncNoTerminate"}, Workspace)
+
+            Rosyn.Register({
+                Components = {Test};
+                Collect = Rosyn.Collectors.Tags("AsyncNoTerminate");
+            })
+
+            expect(Stage).to.equal(1)
+            expect(coroutine.status(Thread)).to.equal("suspended")
+            task.wait()
+            task.wait()
+            expect(Stage).to.equal(2)
+            expect(coroutine.status(Thread)).to.equal("dead")
+        end)
     end)
 
     describe("Component.Destroy", function()
@@ -751,6 +786,35 @@ return function()
 
             Inst:Destroy()
             expect(DidDestroy).to.equal(true)
+        end)
+
+        it("should terminate all Async-spawned threads from the Initial thread on destroy", function()
+            local Test = MakeClass()
+            local Stage
+            local Thread
+
+            function Test:Initial()
+                Async.Spawn(function()
+                    Thread = coroutine.running()
+                    Stage = 1
+                    task.wait(0.1)
+                    Stage = 2
+                end)
+            end
+
+            local Inst = MakeTestInstance({"DestroyAsyncTerminate"}, Workspace)
+
+            Rosyn.Register({
+                Components = {Test};
+                Collect = Rosyn.Collectors.Tags("DestroyAsyncTerminate");
+            })
+
+            expect(Stage).to.equal(1)
+            expect(coroutine.status(Thread)).to.equal("suspended")
+            Inst:Destroy()
+            task.wait(0.1)
+            expect(Stage).to.equal(1)
+            expect(coroutine.status(Thread)).to.equal("dead")
         end)
     end)
 end

@@ -10,4 +10,4 @@ authors = ["tpc9000"]
 TypeGuard = "tpc9000/typeguard@3.1.0"
 Cleaner = "tpc9000/cleaner@0.1.2"
 XSignal = "tpc9000/xsignal@2.0.0"
-Async = "tpc9000/async@0.1.2"
+Async = "tpc9000/async@0.1.3"

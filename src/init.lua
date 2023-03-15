@@ -194,31 +194,17 @@ function Rosyn.Register(Data: RegisterData)
         end
     end
 
-    local Registered = {}
-    local Trace = debug.traceback()
-
     local Filter = Data.Filter or function()
         return true
     end
 
     local function HandleCreation(Item: Instance)
-        if (Registered[Item]) then
-            return
-        end
-
-        if (Item.Parent == nil) then
-            error("Instance was already destroyed.")
-        end
-
         if (not Filter(Item)) then
             return
         end
 
-        Registered[Item] = true
-
         for _, ComponentClass in Components do
             if (Rosyn.GetComponent(Item, ComponentClass)) then
-                warn(`Register attempted to create duplicate component: {Rosyn.GetComponentName(ComponentClass)}\n\n{Trace}`)
                 continue
             end
 
@@ -227,15 +213,8 @@ function Rosyn.Register(Data: RegisterData)
     end
 
     local function HandleDestruction(Item)
-        if (not Filter(Item)) then
-            return
-        end
-
-        Registered[Item] = nil
-
         for _, ComponentClass in Components do
             if (not Rosyn.GetComponent(Item, ComponentClass)) then
-                warn(`Component not found: {Rosyn.GetComponentName(ComponentClass)}.`)
                 continue
             end
 
@@ -494,7 +473,7 @@ function Rosyn._AddComponent(Object: Instance, ComponentClass: ValidComponentCla
     };
     _ComponentsToMetadata[NewComponent] = Metadata
 
-    Metadata.InitialThread = Async.SpawnTimed(Rosyn._GetOption(ComponentClass, "InitialTimeout") :: number, function(OnFinish)
+    Metadata.InitialThread = Async.SpawnTimeLimit(Rosyn._GetOption(ComponentClass, "InitialTimeout") :: number, function(OnFinish)
         OnFinish(function(Success, Result)
             Metadata.Initialized = Success
 
@@ -639,6 +618,11 @@ function Rosyn._RemoveComponent(Object: Instance, ComponentClass: ValidComponent
         error(`Component destructor {ComponentName} yielded or threw an error on {Object:GetFullName()}.`)
     end
 
+    if (Rosyn._GetOption(ComponentClass, "InitialTimeout") == 0.0001) then
+        print(">>>>>>>>>> JSGHGHJKGDHKJAHGKJ")
+    end
+
+    Async.Cancel(Metadata.InitialThread, "ROSYN_DESTROY") -- This will terminate all descendant threads spawned in Initial, on component removal / destruction
     debug.profileend()
 end
 
