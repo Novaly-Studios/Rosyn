@@ -817,4 +817,99 @@ return function()
             expect(coroutine.status(Thread)).to.equal("dead")
         end)
     end)
+
+    describe("Rosyn.Register + Children", function()
+        it("should register components on children", function()
+            local Test = MakeClass()
+            local Inst = MakeTestInstance({}, Workspace)
+            local Child1 = MakeTestInstance({}, Inst)
+
+            Rosyn.Register({
+                Components = {Test};
+                Collect = Rosyn.Collectors.Children(Inst);
+            })
+
+            expect(Rosyn.GetComponent(Child1, Test)).to.be.ok()
+
+            local Child2 = MakeTestInstance({}, Inst)
+            expect(Rosyn.GetComponent(Child2, Test)).to.be.ok()
+        end)
+
+        it("should call Destroy on destroyed Instances", function()
+            local Test = MakeClass()
+            local Destroyed = {}
+
+            function Test:Destroy()
+                Destroyed[self.Root] = true
+            end
+
+            local Inst = MakeTestInstance({}, Workspace)
+            local Child1 = MakeTestInstance({}, Inst)
+
+            Rosyn.Register({
+                Components = {Test};
+                Collect = Rosyn.Collectors.Children(Inst);
+            })
+
+            expect(Destroyed[Child1]).to.never.be.ok()
+            Child1:Destroy()
+            expect(Destroyed[Child1]).to.be.ok()
+
+            local Child2 = MakeTestInstance({}, Inst)
+            expect(Destroyed[Child2]).to.never.be.ok()
+            Inst:Destroy()
+            expect(Destroyed[Child2]).to.be.ok()
+        end)
+    end)
+
+    describe("Rosyn.Register + Descendants", function()
+        it("should register components on descendants", function()
+            local Test = MakeClass()
+            local Inst = MakeTestInstance({}, Workspace)
+                local Child1 = MakeTestInstance({}, Inst)
+                    local Child2 = MakeTestInstance({}, Child1)
+
+            Rosyn.Register({
+                Components = {Test};
+                Collect = Rosyn.Collectors.Descendants(Inst);
+            })
+
+            expect(Rosyn.GetComponent(Child1, Test)).to.be.ok()
+            expect(Rosyn.GetComponent(Child2, Test)).to.be.ok()
+
+            local Child3 = MakeTestInstance({}, Child2)
+            expect(Rosyn.GetComponent(Child3, Test)).to.be.ok()
+        end)
+
+        it("should call Destroy on destroyed Instances", function()
+            local Test = MakeClass()
+            local Destroyed = {}
+
+            function Test:Destroy()
+                Destroyed[self.Root] = true
+            end
+
+            local Inst = MakeTestInstance({}, Workspace)
+                local Child1 = MakeTestInstance({}, Inst)
+                    local Child2 = MakeTestInstance({}, Child1)
+
+            Rosyn.Register({
+                Components = {Test};
+                Collect = Rosyn.Collectors.Descendants(Inst);
+            })
+
+            local Child3 = MakeTestInstance({}, Child2)
+            expect(Destroyed[Child3]).to.never.be.ok()
+            Child3:Destroy()
+            expect(Destroyed[Child3]).to.be.ok()
+
+            expect(Destroyed[Child2]).to.never.be.ok()
+            Child2:Destroy()
+            expect(Destroyed[Child2]).to.be.ok()
+
+            expect(Destroyed[Child1]).to.never.be.ok()
+            Child1:Destroy()
+            expect(Destroyed[Child1]).to.be.ok()
+        end)
+    end)
 end

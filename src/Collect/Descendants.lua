@@ -6,12 +6,16 @@ return function(Root: Instance)
     DescendantsParams(Root)
 
     return function(Create, Destroy)
-        local function CreateProxy(Instance)
-            task.spawn(Create, Instance)
+        local function CreateProxy(Object: Instance)
+            task.spawn(Create, Object)
 
-            local Temp; Temp = Instance.Destroyed:Connect(function()
+            local Temp; Temp = Object.AncestryChanged:Connect(function()
+                if (Object:IsDescendantOf(game)) then
+                    return
+                end
+
                 Temp:Disconnect()
-                Destroy(Instance)
+                Destroy(Object)
             end)
         end
 
