@@ -68,7 +68,7 @@ local ValidComponentClassOrInstance = ValidComponentClass:Or(ValidComponentInsta
 
 local ValidGameObject = TypeGuard.Instance()
 
-local DESTROY_SUFFIX = ":Destroy"
+local DESTROY_SUFFIX = ":Destroy()"
 local MEMORY_TAG_SUFFIX = ":Initial()"
 local DIAGNOSIS_TAG_PREFIX = "Component."
 
@@ -80,7 +80,7 @@ local WRAP_INITIAL_MEM_TAGS = true
 
 -- Associations between Instances, component classes, and component instances, to ensure immediate lookup
 local _InstanceToComponents = {}
-local _ComponentsToMetadata = {} :: {[ValidComponentClassOrInstance]: {Initialized: boolean, InitialThread: thread?, Result: any?}}
+local _ComponentsToInitialThread = {} :: {[ValidComponentClassOrInstance]: thread}
 local _ComponentClassToInstances = {}
 local _ComponentClassToComponents = {}
 
@@ -98,7 +98,6 @@ local function ReadOnlyProxy(Object)
             return next, Object or Result
         end;
         __index = Object;
-        __tostring = "ReadOnlyProxy";
     })
     table.freeze(Result)
     return Result
@@ -212,7 +211,7 @@ function Rosyn.Register(Data: RegisterData)
         end
     end
 
-    local function HandleDestruction(Item)
+    local function HandleDestruction(Item: Instance)
         for _, ComponentClass in Components do
             if (not Rosyn.GetComponent(Item, ComponentClass)) then
                 continue
@@ -257,6 +256,23 @@ function Rosyn.ExpectComponent<T>(Object: Instance, ComponentClass: T & ValidCom
     return Component
 end
 
+local ExpectComponentInitParams = TypeGuard.Params(ValidGameObject, ValidComponentClass)
+--- Asserts that a component exists on a given Instance and that it has been initialized.
+function Rosyn.ExpectComponentInit<T>(Object: Instance, ComponentClass: T & ValidComponentClassOrInstance): T
+    if (VALIDATE_PARAMS) then
+        ExpectComponentInitParams(Object, ComponentClass)
+    end
+
+    local Component = Rosyn.ExpectComponent(Object, ComponentClass)
+    local Metadata = Async.GetMetadata(_ComponentsToInitialThread[Component])
+
+    if (Metadata == nil or Metadata.Success == nil) then
+        error(`Expected component '{Rosyn.GetComponentName(ComponentClass)}' to be initialized on Instance '{Object:GetFullName()}'.`)
+    end
+
+    return Component
+end
+
 local AwaitComponentInitParams = TypeGuard.Params(ValidGameObject, ValidComponentClass, TypeGuard.Number():Optional())
 --[[
     Waits for a component instance's asynchronous Initial method to complete and returns it.
@@ -273,10 +289,12 @@ function Rosyn.AwaitComponentInit<T>(Object: Instance, ComponentClass: T & Valid
     local function AwaitComponentInitial(DeductTime)
         local RemainingTimeout = CorrectedTimeout - DeductTime
         local Component = Rosyn.GetComponent(Object, ComponentClass)
-        local Metadata = _ComponentsToMetadata[Component]
+
+        local InitialThread = _ComponentsToInitialThread[Component]
+        local Metadata = Async.GetMetadata(InitialThread)
 
         -- Possibility that Initial has not finished yet. Await will also return if it's already finished.
-        Async.Await(Metadata.InitialThread, math.max(0, RemainingTimeout))
+        Async.Await(InitialThread, math.max(0, RemainingTimeout))
         task.cancel(WarningThread)
         Component = Rosyn.GetComponent(Object, ComponentClass)
 
@@ -292,18 +310,19 @@ function Rosyn.AwaitComponentInit<T>(Object: Instance, ComponentClass: T & Valid
             error(`Component '{ComponentName}' timed out while initializing.`)
         end
 
-        local Initialized = Metadata.Initialized
+        local Success = Metadata.Success
 
         -- 1.3. Wait call timed out before component was initialized.
-        if (Initialized == nil) then
+        if (Success == nil) then
             error(`Component '{ComponentName}' wait call timed out ({RemainingTimeout}s).`)
         end
 
-        if (not Initialized) then
+        -- 1.4. Initial explicitly threw an error after wait call.
+        if (not Success) then
             error(`Component '{ComponentName}' threw an error while initializing.`)
         end
 
-        -- 1.4. Initial succeeded.
+        -- 1.5. Initial succeeded.
         return Component
     end
 
@@ -466,22 +485,12 @@ function Rosyn._AddComponent(Object: Instance, ComponentClass: ValidComponentCla
         ---------------------------------------------------------------------------------------------------------
     debug.profileend()
 
-    local Metadata = {
-        InitialThread = nil;
-        Initialized = nil;
-        Result = nil;
-    };
-    _ComponentsToMetadata[NewComponent] = Metadata
-
-    Metadata.InitialThread = Async.SpawnTimeLimit(Rosyn._GetOption(ComponentClass, "InitialTimeout") :: number, function(OnFinish)
+    _ComponentsToInitialThread[NewComponent]= Async.SpawnTimeLimit(Rosyn._GetOption(ComponentClass, "InitialTimeout") :: number, function(OnFinish)
         OnFinish(function(Success, Result)
-            Metadata.Initialized = Success
-
             if (Success) then
                 return
             end
 
-            Metadata.Result = Result
             _ComponentClassInitializationFailed:Fire(ComponentName, Object, Result, "")
 
             if (Result == "TIMEOUT") then
@@ -607,18 +616,18 @@ function Rosyn._RemoveComponent(Object: Instance, ComponentClass: ValidComponent
 
     -- Wait for Intial to finish if it hasn't already - this way Destroy is guaranteed to be called after Initial.
     -- Initial is guaranteed to timeout using the Async library, so this is safe.
-    local Metadata = _ComponentsToMetadata[ExistingComponent]
-    Async.Await(Metadata.InitialThread)
+    local InitialThread = _ComponentsToInitialThread[ExistingComponent]
+    Async.Await(InitialThread)
 
     -- Destroy component to let it clean stuff up
     debug.profilebegin(DiagnosisTag .. DESTROY_SUFFIX)
-    _ComponentsToMetadata[ExistingComponent] = nil
+    _ComponentsToInitialThread[ExistingComponent] = nil
 
     if (coroutine.status(task.spawn(ExistingComponent.Destroy, ExistingComponent)) ~= "dead") then
         error(`Component destructor {ComponentName} yielded or threw an error on {Object:GetFullName()}.`)
     end
 
-    Async.Cancel(Metadata.InitialThread, "ROSYN_DESTROY") -- This will terminate all descendant threads spawned in Initial, on component removal / destruction
+    Async.Cancel(InitialThread, "ROSYN_DESTROY") -- This will terminate all descendant threads spawned in Initial, on component removal / destruction
     debug.profileend()
 end
 
