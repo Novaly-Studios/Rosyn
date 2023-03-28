@@ -121,6 +121,14 @@ local Rosyn = {
         Children = require(Collect:WaitForChild("Children"));
         Tags = require(Collect:WaitForChild("Tags"));
     };
+
+    -- Helps debugging
+    _InstanceToComponents = _InstanceToComponents;
+    _ComponentsToInitialThread = _ComponentsToInitialThread;
+    _ComponentClassToInstances = _ComponentClassToInstances;
+    _ComponentClassToComponents = _ComponentClassToComponents;
+    _ComponentClassAddedEvents = _ComponentClassAddedEvents;
+    _ComponentClassRemovingEvents = _ComponentClassRemovingEvents;
 };
 
 function Rosyn._Invariant()
