@@ -493,7 +493,7 @@ function Rosyn._AddComponent(Object: Instance, ComponentClass: ValidComponentCla
         ---------------------------------------------------------------------------------------------------------
     debug.profileend()
 
-    _ComponentsToInitialThread[NewComponent]= Async.SpawnTimeLimit(Rosyn._GetOption(ComponentClass, "InitialTimeout") :: number, function(OnFinish)
+    _ComponentsToInitialThread[NewComponent] = Async.SpawnTimeLimit(Rosyn._GetOption(ComponentClass, "InitialTimeout") :: number, function(OnFinish)
         OnFinish(function(Success, Result)
             if (Success) then
                 return
@@ -510,7 +510,8 @@ function Rosyn._AddComponent(Object: Instance, ComponentClass: ValidComponentCla
 
         if (not Success) then
             task.spawn(error, `Component {ComponentName} failed to initialize on {Object:GetFullName()} with error: {Result}`)
-            Async.Cancel(coroutine.running(), Result)
+            --Async.Cancel(coroutine.running(), Result)
+            return false, Result
         end
     end)
 
