@@ -127,6 +127,7 @@ local Rosyn = {
     _ComponentsToInitialThread = _ComponentsToInitialThread;
     _ComponentClassToInstances = _ComponentClassToInstances;
     _ComponentClassToComponents = _ComponentClassToComponents;
+
     _ComponentClassAddedEvents = _ComponentClassAddedEvents;
     _ComponentClassRemovingEvents = _ComponentClassRemovingEvents;
 };
@@ -510,7 +511,6 @@ function Rosyn._AddComponent(Object: Instance, ComponentClass: ValidComponentCla
 
         if (not Success) then
             task.spawn(error, `Component {ComponentName} failed to initialize on {Object:GetFullName()} with error: {Result}`)
-            --Async.Cancel(coroutine.running(), Result)
             return false, Result
         end
     end)
