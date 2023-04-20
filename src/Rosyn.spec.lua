@@ -66,8 +66,9 @@ return function()
         it("should accept standard arguments", function()
             expect(function()
                 Rosyn.Register({
-                    Components = {MakeClass()};
-                    Collect = Rosyn.Collectors.Tags("ArgsTestTag1");
+                    Components = Rosyn.Setup.Tags({
+                        ArgsTestTag1 = MakeClass();
+                    });
                 })
             end).never.to.throw()
         end)
@@ -88,8 +89,9 @@ return function()
 
             task.spawn(function()
                 Rosyn.Register({
-                    Components = {Test};
-                    Collect = Rosyn.Collectors.Tags("AsyncTestTag1");
+                    Components = Rosyn.Setup.Tags({
+                        AsyncTestTag1 = Test;
+                    });
                 })
 
                 Complete = true
@@ -117,16 +119,18 @@ return function()
             end
 
             Rosyn.Register({
-                Components = {Test1};
-                Collect = Rosyn.Collectors.Tags("AncestorTestTag1");
+                Components = Rosyn.Setup.Tags({
+                    AncestorTestTag1 = Test1;
+                });
                 Filter = function(Object)
                     return Object:IsDescendantOf(Workspace)
                 end;
             })
 
             Rosyn.Register({
-                Components = {Test2};
-                Collect = Rosyn.Collectors.Tags("AncestorTestTag1");
+                Components = Rosyn.Setup.Tags({
+                    AncestorTestTag2 = Test2;
+                });
                 Filter = function(Object)
                     return Object:IsDescendantOf(game:GetService("ReplicatedStorage"))
                 end;
@@ -148,8 +152,9 @@ return function()
             end
 
             Rosyn.Register({
-                Components = {Test};
-                Collect = Rosyn.Collectors.Tags("DestroyTestTag1");
+                Components = Rosyn.Setup.Tags({
+                    DestroyTestTag1 = Test;
+                });
             })
 
             local Inst = MakeTestInstance({"DestroyTestTag1"}, Workspace)
@@ -164,13 +169,15 @@ return function()
             local Inst = MakeTestInstance({"MultiComponentOneTag"}, Workspace)
 
             Rosyn.Register({
-                Components = {Test1};
-                Collect = Rosyn.Collectors.Tags("MultiComponentOneTag");
+                Components = Rosyn.Setup.Tags({
+                    MultiComponentOneTag = Test1;
+                });
             })
 
             Rosyn.Register({
-                Components = {Test2};
-                Collect = Rosyn.Collectors.Tags("MultiComponentOneTag");
+                Components = Rosyn.Setup.Tags({
+                    MultiComponentOneTag = Test2;
+                });
             })
 
             expect(Rosyn.GetComponent(Inst, Test1)).to.be.ok()
@@ -183,13 +190,15 @@ return function()
             local Inst = MakeTestInstance({"MultiTag1", "MultiTag2"}, Workspace)
 
             Rosyn.Register({
-                Components = {Test1};
-                Collect = Rosyn.Collectors.Tags("MultiTag1");
+                Components = Rosyn.Setup.Tags({
+                    MultiTag1 = Test1;
+                });
             })
 
             Rosyn.Register({
-                Components = {Test2};
-                Collect = Rosyn.Collectors.Tags("MultiTag2");
+                Components = Rosyn.Setup.Tags({
+                    MultiTag2 = Test2;
+                });
             })
 
             expect(Rosyn.GetComponent(Inst, Test1)).to.be.ok()
@@ -206,12 +215,39 @@ return function()
             local Inst = MakeTestInstance({"BlankTable"}, Workspace)
 
             Rosyn.Register({
-                Components = {Test};
-                Collect = Rosyn.Collectors.Tags("BlankTable");
+                Components = Rosyn.Setup.Tags({
+                    BlankTable = Test;
+                })
             })
 
             expect(Rosyn.GetComponent(Inst, Test)).to.be.ok()
             expect(Rosyn.GetComponent(Inst, Test).X).to.equal(1)
+        end)
+
+        it("should remove specific components for removal of tags, instead of all components", function()
+            local Test1 = MakeClass()
+            local Test2 = MakeClass()
+
+            local Inst = MakeTestInstance({"TagsSetup1"}, Workspace)
+
+            Rosyn.Register({
+                Components = Rosyn.Setup.Tags({
+                    TagsSetup1 = Test1;
+                    TagsSetup2 = Test2;
+                })
+            })
+
+            expect(Rosyn.GetComponent(Inst, Test1)).to.be.ok()
+            expect(Rosyn.GetComponent(Inst, Test2)).never.to.be.ok()
+            CollectionService:AddTag(Inst, "TagsSetup2")
+            expect(Rosyn.GetComponent(Inst, Test1)).to.be.ok()
+            expect(Rosyn.GetComponent(Inst, Test2)).to.be.ok()
+            CollectionService:RemoveTag(Inst, "TagsSetup1")
+            expect(Rosyn.GetComponent(Inst, Test1)).never.to.be.ok()
+            expect(Rosyn.GetComponent(Inst, Test2)).to.be.ok()
+            CollectionService:RemoveTag(Inst, "TagsSetup2")
+            expect(Rosyn.GetComponent(Inst, Test1)).never.to.be.ok()
+            expect(Rosyn.GetComponent(Inst, Test2)).never.to.be.ok()
         end)
     end)
 
@@ -227,8 +263,9 @@ return function()
             local Inst = MakeTestInstance({"GetComponent1"}, Workspace)
 
             Rosyn.Register({
-                Components = {Test1, Test2};
-                Collect = Rosyn.Collectors.Tags("GetComponent1");
+                Components = Rosyn.Setup.Tags({
+                    GetComponent1 = {Test1, Test2};
+                });
             })
 
             expect(Rosyn.GetComponent(Inst, Test1)).to.be.ok()
@@ -251,8 +288,9 @@ return function()
             local Inst = MakeTestInstance({"ExpectComponent1"}, Workspace)
 
             Rosyn.Register({
-                Components = {Test1, Test2};
-                Collect = Rosyn.Collectors.Tags("ExpectComponent1");
+                Components = Rosyn.Setup.Tags({
+                    ExpectComponent1 = {Test1, Test2};
+                });
             })
 
             expect(Rosyn.ExpectComponent(Inst, Test1)).to.be.ok()
@@ -266,8 +304,9 @@ return function()
             local Inst = MakeTestInstance({"AwaitComponentInit1"}, Workspace)
 
             Rosyn.Register({
-                Components = {Test1};
-                Collect = Rosyn.Collectors.Tags("AwaitComponentInit1");
+                Components = Rosyn.Setup.Tags({
+                    AwaitComponentInit1 = {Test1};
+                });
             })
 
             expect(Rosyn.AwaitComponentInit(Inst, Test1)).to.be.ok()
@@ -279,8 +318,9 @@ return function()
 
             task.delay(1, function()
                 Rosyn.Register({
-                    Components = {Test1};
-                    Collect = Rosyn.Collectors.Tags("AwaitComponentInit2");
+                    Components = Rosyn.Setup.Tags({
+                        AwaitComponentInit2 = {Test1};
+                    });
                 })
             end)
 
@@ -323,8 +363,9 @@ return function()
             local Inst = MakeTestInstance({"AwaitComponentInit5"}, Workspace)
 
             Rosyn.Register({
-                Components = {Test1};
-                Collect = Rosyn.Collectors.Tags("AwaitComponentInit5");
+                Components = Rosyn.Setup.Tags({
+                    AwaitComponentInit5 = {Test1};
+                });
             })
 
             local DidImmediatelyGet = false
@@ -366,8 +407,9 @@ return function()
             end
 
             Rosyn.Register({
-                Components = {Test1, Test2, Test3};
-                Collect = Rosyn.Collectors.Tags("AwaitComponentInit6");
+                Components = Rosyn.Setup.Tags({
+                    AwaitComponentInit6 = {Test1, Test2, Test3};
+                });
             })
 
             expect(Accumulation).to.equal(0)
@@ -408,8 +450,9 @@ return function()
             expect(Accumulation).to.equal(0)
 
             Rosyn.Register({
-                Components = {Test1, Test2, Test3};
-                Collect = Rosyn.Collectors.Tags("AwaitComponentInit7");
+                Components = Rosyn.Setup.Tags({
+                    AwaitComponentInit7 = {Test1, Test2, Test3};
+                });
             })
 
             task.wait(0.1)
@@ -429,8 +472,9 @@ return function()
             local Inst = MakeTestInstance({"AwaitComponentInit8"}, Workspace)
 
             Rosyn.Register({
-                Components = {Test};
-                Collect = Rosyn.Collectors.Tags("AwaitComponentInit8");
+                Components = Rosyn.Setup.Tags({
+                    AwaitComponentInit8 = {Test};
+                });
             })
 
             expect(function()
@@ -452,8 +496,9 @@ return function()
             local Test1 = MakeClass()
 
             Rosyn.Register({
-                Components = {Test1};
-                Collect = Rosyn.Collectors.Tags("DescendantTest1");
+                Components = Rosyn.Setup.Tags({
+                    DescendantTest1 = {Test1};
+                });
             })
 
             expect(Rosyn.GetComponentFromDescendant(Inst1, Test1)).to.be.ok()
@@ -467,8 +512,9 @@ return function()
             local Test1 = MakeClass()
 
             Rosyn.Register({
-                Components = {Test1};
-                Collect = Rosyn.Collectors.Tags("GetInstancesOfClass1");
+                Components = Rosyn.Setup.Tags({
+                    GetInstancesOfClass1 = {Test1};
+                });
             })
 
             for _ = 1, 5 do
@@ -492,8 +538,9 @@ return function()
             local Test1 = MakeClass()
 
             Rosyn.Register({
-                Components = {Test1};
-                Collect = Rosyn.Collectors.Tags("GetComponentsOfClass1");
+                Components = Rosyn.Setup.Tags({
+                    GetComponentsOfClass1 = {Test1};
+                });
             })
 
             for _ = 1, 5 do
@@ -518,13 +565,15 @@ return function()
             local Inst = MakeTestInstance({"GetComponentsFromInstance1", "GetComponentsFromInstance2"}, Workspace)
 
             Rosyn.Register({
-                Components = {Test1};
-                Collect = Rosyn.Collectors.Tags("GetComponentsFromInstance1");
+                Components = Rosyn.Setup.Tags({
+                    GetComponentsFromInstance1 = {Test1};
+                });
             })
 
             Rosyn.Register({
-                Components = {Test2};
-                Collect = Rosyn.Collectors.Tags("GetComponentsFromInstance2");
+                Components = Rosyn.Setup.Tags({
+                    GetComponentsFromInstance2 = {Test2};
+                });
             })
 
             local Components = Rosyn.GetComponentsFromInstance(Inst)
@@ -545,8 +594,9 @@ return function()
             local Inst = MakeTestInstance({"GetComponentsFromInstance3"}, Workspace)
 
             Rosyn.Register({
-                Components = {Test1};
-                Collect = Rosyn.Collectors.Tags("GetComponentsFromInstance3");
+                Components = Rosyn.Setup.Tags({
+                    GetComponentsFromInstance3 = {Test1};
+                });
             })
 
             local Components = Rosyn.GetComponentsFromInstance(Inst)
@@ -573,8 +623,9 @@ return function()
             local Inst = MakeTestInstance({"InitialTimeout1"}, Workspace)
 
             Rosyn.Register({
-                Components = {Test};
-                Collect = Rosyn.Collectors.Tags("InitialTimeout1");
+                Components = Rosyn.Setup.Tags({
+                    InitialTimeout1 = {Test};
+                });
             })
 
             task.wait(0.1)
@@ -595,8 +646,9 @@ return function()
             local Inst = MakeTestInstance({"InitialError1"}, Workspace)
 
             Rosyn.Register({
-                Components = {Test};
-                Collect = Rosyn.Collectors.Tags("InitialError1");
+                Components = Rosyn.Setup.Tags({
+                    InitialError1 = {Test};
+                });
             })
 
             expect(function()
@@ -614,8 +666,9 @@ return function()
             local Inst = MakeTestInstance({"InitialSuccess1"}, Workspace)
 
             Rosyn.Register({
-                Components = {Test};
-                Collect = Rosyn.Collectors.Tags("InitialSuccess1");
+                Components = Rosyn.Setup.Tags({
+                    InitialSuccess1 = {Test};
+                });
             })
 
             local Component = Rosyn.AwaitComponentInit(Inst, Test)
@@ -642,8 +695,9 @@ return function()
             local Inst = MakeTestInstance({"InstanceRemoved1"}, Workspace)
 
             Rosyn.Register({
-                Components = {Test};
-                Collect = Rosyn.Collectors.Tags("InstanceRemoved1");
+                Components = Rosyn.Setup.Tags({
+                    InstanceRemoved1 = {Test};
+                });
             })
 
             task.delay(0.1, function()
@@ -665,8 +719,9 @@ return function()
             local Inst = MakeTestInstance({"InitialError1"}, Workspace)
 
             Rosyn.Register({
-                Components = {Test};
-                Collect = Rosyn.Collectors.Tags("InitialError1");
+                Components = Rosyn.Setup.Tags({
+                    InitialError1 = {Test};
+                });
             })
 
             task.wait()
@@ -686,11 +741,12 @@ return function()
                 task.wait(0.5)
             end
 
-            local Inst = MakeTestInstance({"InitialError1"}, Workspace)
+            local Inst = MakeTestInstance({"InitialError2"}, Workspace)
 
             Rosyn.Register({
-                Components = {Test};
-                Collect = Rosyn.Collectors.Tags("InitialError1");
+                Components = Rosyn.Setup.Tags({
+                    InitialError2 = {Test};
+                });
             })
 
             task.wait(0.2)
@@ -722,8 +778,9 @@ return function()
             MakeTestInstance({"AsyncNoTerminate"}, Workspace)
 
             Rosyn.Register({
-                Components = {Test};
-                Collect = Rosyn.Collectors.Tags("AsyncNoTerminate");
+                Components = Rosyn.Setup.Tags({
+                    AsyncNoTerminate = {Test};
+                });
             })
 
             expect(Stage).to.equal(1)
@@ -751,8 +808,9 @@ return function()
             local Inst = MakeTestInstance({"DestroySequence1"}, Workspace)
 
             Rosyn.Register({
-                Components = {Test};
-                Collect = Rosyn.Collectors.Tags("DestroySequence1");
+                Components = Rosyn.Setup.Tags({
+                    DestroySequence1 = {Test};
+                });
             })
 
             Inst:Destroy()
@@ -776,8 +834,9 @@ return function()
             local Inst = MakeTestInstance({"DestroySequence2"}, Workspace)
 
             Rosyn.Register({
-                Components = {Test};
-                Collect = Rosyn.Collectors.Tags("DestroySequence2");
+                Components = Rosyn.Setup.Tags({
+                    DestroySequence2 = {Test};
+                });
             })
 
             Inst:Destroy()
@@ -798,8 +857,9 @@ return function()
             local Inst = MakeTestInstance({"DestroySequence3"}, Workspace)
 
             Rosyn.Register({
-                Components = {Test};
-                Collect = Rosyn.Collectors.Tags("DestroySequence3");
+                Components = Rosyn.Setup.Tags({
+                    DestroySequence3 = {Test};
+                });
             })
 
             Inst:Destroy()
@@ -823,8 +883,9 @@ return function()
             local Inst = MakeTestInstance({"DestroyAsyncTerminate"}, Workspace)
 
             Rosyn.Register({
-                Components = {Test};
-                Collect = Rosyn.Collectors.Tags("DestroyAsyncTerminate");
+                Components = Rosyn.Setup.Tags({
+                    DestroyAsyncTerminate = {Test};
+                });
             })
 
             expect(Stage).to.equal(1)
@@ -843,8 +904,7 @@ return function()
             local Child1 = MakeTestInstance({}, Inst)
 
             Rosyn.Register({
-                Components = {Test};
-                Collect = Rosyn.Collectors.Children(Inst);
+                Components = Rosyn.Setup.Children(Inst, Test);
             })
 
             expect(Rosyn.GetComponent(Child1, Test)).to.be.ok()
@@ -865,8 +925,7 @@ return function()
             local Child1 = MakeTestInstance({}, Inst)
 
             Rosyn.Register({
-                Components = {Test};
-                Collect = Rosyn.Collectors.Children(Inst);
+                Components = Rosyn.Setup.Children(Inst, Test);
             })
 
             expect(Destroyed[Child1]).to.never.be.ok()
@@ -888,8 +947,7 @@ return function()
                     local Child2 = MakeTestInstance({}, Child1)
 
             Rosyn.Register({
-                Components = {Test};
-                Collect = Rosyn.Collectors.Descendants(Inst);
+                Components = Rosyn.Setup.Descendants(Inst, Test);
             })
 
             expect(Rosyn.GetComponent(Child1, Test)).to.be.ok()
@@ -912,8 +970,7 @@ return function()
                     local Child2 = MakeTestInstance({}, Child1)
 
             Rosyn.Register({
-                Components = {Test};
-                Collect = Rosyn.Collectors.Descendants(Inst);
+                Components = Rosyn.Setup.Descendants(Inst, Test);
             })
 
             local Child3 = MakeTestInstance({}, Child2)

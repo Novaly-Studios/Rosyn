@@ -1,13 +1,13 @@
 local TypeGuard = require(script.Parent.Parent.Parent:WaitForChild("TypeGuard"))
 
-local ChildrenParams = TypeGuard.Params(TypeGuard.Instance())
+local DescendantsParams = TypeGuard.Params(TypeGuard.Instance(), TypeGuard.Object())
 
-return function(Root: Instance)
-    ChildrenParams(Root)
+return function(Root: Instance, ComponentClass)
+    DescendantsParams(Root, ComponentClass)
 
     return function(Create, Destroy)
         local function CreateProxy(Object: Instance)
-            task.spawn(Create, Object)
+            task.spawn(Create, Object, ComponentClass)
 
             local Temp; Temp = Object.AncestryChanged:Connect(function()
                 if (Object:IsDescendantOf(game)) then
@@ -15,14 +15,14 @@ return function(Root: Instance)
                 end
 
                 Temp:Disconnect()
-                Destroy(Object)
+                Destroy(Object, ComponentClass)
             end)
         end
 
-        for _, Child in Root:GetChildren() do
+        for _, Child in Root:GetDescendants() do
             CreateProxy(Child)
         end
 
-        Root.ChildAdded:Connect(CreateProxy)
+        Root.DescendantAdded:Connect(CreateProxy)
     end
 end
