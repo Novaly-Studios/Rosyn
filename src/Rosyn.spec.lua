@@ -195,6 +195,24 @@ return function()
             expect(Rosyn.GetComponent(Inst, Test1)).to.be.ok()
             expect(Rosyn.GetComponent(Inst, Test2)).to.be.ok()
         end)
+
+        it("should accept a non-__index class", function()
+            local Test = {}
+
+            function Test.new()
+                return {X = 1}
+            end
+
+            local Inst = MakeTestInstance({"BlankTable"}, Workspace)
+
+            Rosyn.Register({
+                Components = {Test};
+                Collect = Rosyn.Collectors.Tags("BlankTable");
+            })
+
+            expect(Rosyn.GetComponent(Inst, Test)).to.be.ok()
+            expect(Rosyn.GetComponent(Inst, Test).X).to.equal(1)
+        end)
     end)
 
     describe("Rosyn.GetComponent", function()

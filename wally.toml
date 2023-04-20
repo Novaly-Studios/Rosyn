@@ -1,13 +1,13 @@
 [package]
 name = "tpc9000/rosyn"
-version = "0.3.9"
+version = "0.3.10"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
 license = "MIT"
 authors = ["tpc9000"]
 
 [dependencies]
-TypeGuard = "tpc9000/typeguard@3.1.0"
-Cleaner = "tpc9000/cleaner@0.1.2"
+TypeGuard = "tpc9000/typeguard@4.0.0"
+TableUtil = "tpc9000/tableutil@0.5.0"
 XSignal = "tpc9000/xsignal@2.0.0"
-Async = "tpc9000/async@0.1.12"
+Async = "tpc9000/async@0.2.0"
