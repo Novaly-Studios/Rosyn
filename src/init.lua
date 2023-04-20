@@ -184,6 +184,8 @@ function Rosyn.Register(Data: RegisterData)
                 OldInitial(self)
                 debug.resetmemorycategory()
             end
+
+            ComponentClass._INITIAL_WRAPPED = true
         end
 
         Rosyn._AddComponent(Item, ComponentClass)

@@ -249,6 +249,42 @@ return function()
             expect(Rosyn.GetComponent(Inst, Test1)).never.to.be.ok()
             expect(Rosyn.GetComponent(Inst, Test2)).never.to.be.ok()
         end)
+
+        it("should only wrap Destroy once", function()
+            local Test = MakeClass()
+
+            Rosyn.Register({
+                Components = Rosyn.Setup.Tags({
+                    WrapDestroy1 = Test;
+                    WrapDestroy2 = Test;
+                })
+            })
+
+            local Original = Test.Destroy
+            MakeTestInstance({"WrapDestroy1"}, Workspace)
+            local New = Test.Destroy
+            expect(Original).never.to.equal(New)
+            MakeTestInstance({"WrapDestroy2"}, Workspace)
+            expect(New).to.equal(Test.Destroy)
+        end)
+
+        it("should only wrap Initial once", function()
+            local Test = MakeClass()
+
+            Rosyn.Register({
+                Components = Rosyn.Setup.Tags({
+                    WrapInitial1 = Test;
+                    WrapInitial2 = Test;
+                })
+            })
+
+            local Original = Test.Initial
+            MakeTestInstance({"WrapInitial1"}, Workspace)
+            local New = Test.Initial
+            expect(Original).never.to.equal(New)
+            MakeTestInstance({"WrapInitial2"}, Workspace)
+            expect(New).to.equal(Test.Initial)
+        end)
     end)
 
     describe("Rosyn.GetComponent", function()
