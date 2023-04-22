@@ -204,7 +204,7 @@ end
 
 local GetComponentParams = TG.Params(TG.Instance(), ValidComponentClass)
 --- Attempts to obtain a specific component from an Instance given a component class.
-function Rosyn.GetComponent<T>(Object: Instance, ComponentClass: T & ValidComponentClass): T?
+function Rosyn.GetComponent<T>(Object: Instance, ComponentClass: T): T?
     if (VALIDATE_PARAMS) then
         GetComponentParams(Object, ComponentClass)
     end
@@ -215,7 +215,7 @@ end
 
 local ExpectComponentParams = TG.Params(TG.Instance(), ValidComponentClass)
 --- Asserts that a component exists on a given Instance.
-function Rosyn.ExpectComponent<T>(Object: Instance, ComponentClass: T & ValidComponentClass): T
+function Rosyn.ExpectComponent<T>(Object: Instance, ComponentClass: T): T
     if (VALIDATE_PARAMS) then
         ExpectComponentParams(Object, ComponentClass)
     end
@@ -231,7 +231,7 @@ end
 
 local ExpectComponentInitParams = TG.Params(TG.Instance(), ValidComponentClass)
 --- Asserts that a component exists on a given Instance and that it has been initialized.
-function Rosyn.ExpectComponentInit<T>(Object: Instance, ComponentClass: T & ValidComponentClass): T
+function Rosyn.ExpectComponentInit<T>(Object: Instance, ComponentClass: T): T
     if (VALIDATE_PARAMS) then
         ExpectComponentInitParams(Object, ComponentClass)
     end
@@ -248,7 +248,7 @@ end
 
 local AwaitComponentInitParams = TG.Params(TG.Instance(), ValidComponentClass, TG.Number():Optional())
 --- Waits for a component instance's asynchronous Initial method to complete and returns it.
-function Rosyn.AwaitComponentInit<T>(Object: Instance, ComponentClass: T & ValidComponentClass, Timeout: number?): T
+function Rosyn.AwaitComponentInit<T>(Object: Instance, ComponentClass: T, Timeout: number?): T
     if (VALIDATE_PARAMS) then
         AwaitComponentInitParams(Object, ComponentClass, Timeout)
     end
@@ -328,7 +328,7 @@ end
 
 local GetComponentFromDescendantParams = TG.Params(TG.Instance(), ValidComponentClass)
 --- Obtains a component instance from an Instance or any of its ascendants.
-function Rosyn.GetComponentFromDescendant<T>(Object: Instance, ComponentClass: T & ValidComponentClass): T?
+function Rosyn.GetComponentFromDescendant<T>(Object: Instance, ComponentClass: T): T?
     if (VALIDATE_PARAMS) then
         GetComponentFromDescendantParams(Object, ComponentClass)
     end
@@ -577,58 +577,5 @@ function Rosyn.GetRemovingSignal(ComponentClass: ValidComponentClass): XSignal<I
     _ComponentClassRemovingEvents[ComponentClass] = RemovingEvent
     return RemovingEvent
 end
-
-
-
-
-
-
---[[ local function MakeClass()
-    local Class = {}
-    Class.__index = Class
-    Class.Type = "Class"
-
-    function Class.new(Root)
-        return setmetatable({
-            Root = Root;
-        }, Class)
-    end
-
-    function Class:Initial() end
-    function Class:Destroy() end
-
-    return Class
-end
-
-local function MakeTestInstance(Tags, Parent)
-    local Test = Instance.new("Model")
-
-    for _, Tag in Tags do
-        game.CollectionService:AddTag(Test, Tag)
-    end
-
-    Test.Parent = Parent
-    return Test
-end
-
-local Test1 = MakeClass()
-local Test2 = MakeClass()
-
-Rosyn.Register({
-    Components = Rosyn.Setup.Tags({
-        XYZ = Test1;
-    });
-})
-
-Rosyn.Register({
-    Components = Rosyn.Setup.Tags({
-        XYZ = Test2;
-    });
-})
-
-local Inst = MakeTestInstance({"XYZ"}, workspace)
-print(Rosyn.GetComponent(Inst, Test1))
-print(Rosyn.GetComponent(Inst, Test2))
-Inst:Destroy() ]]
 
 return Rosyn
