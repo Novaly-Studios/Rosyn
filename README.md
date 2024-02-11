@@ -12,12 +12,12 @@ Test.__index = Test
 
 function Test.new(Root: Instance)
     return setmetatable({
-        Root = Root;
+        _Root = Root;
     }, Test)
 end
 
 function Test:Initial()
-    print("Initial call on", self.Root:GetFullName())
+    print("Initial call on", self._Root:GetFullName())
 end
 
 function Test:Destroy()
@@ -56,7 +56,7 @@ function Test1:Print()
 end
 
 function Test2:Initial()
-    local Test1Component = Rosyn.AwaitComponentInit(self.Root, Test1)
+    local Test1Component = Rosyn.AwaitComponentInit(self._Root, Test1)
     Test1Component:Print()
     print("Test2 Initial")
 end
