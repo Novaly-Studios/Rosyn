@@ -11,7 +11,7 @@ local XSignal = require(script.Parent:WaitForChild("XSignal"))
 local Async = require(script.Parent:WaitForChild("Async"))
     local AsyncGetMetadata = Async.GetMetadata
     local AsyncOnFinish = Async.OnFinish
-    local AsyncResults = Async.Results or Async.GetMetadata
+    local AsyncResults = Async.GetMetadata
     local AsyncCancel = Async.Cancel
     local AsyncAwait = Async.Await
     local AsyncSpawn = Async.Spawn
@@ -19,12 +19,14 @@ local TG = require(script.Parent:WaitForChild("TypeGuard"))
 
 type RosynOptions = {
     DistributeLoadSeconds: number?;
+    InitialTimeoutWarn: number?;
     InitialTimeout: number?;
     WrapDestroy: boolean?;
     WrapInitial: boolean?;
 }
 local RosynOptions = TG.Object({
     DistributeLoadSeconds = TG.Number():Optional();
+    InitialTimeoutWarn = TG.Number():Optional();
     InitialTimeout = TG.Number():Optional();
     WrapDestroy = TG.Boolean():Optional();
     WrapInitial = TG.Boolean():Optional();
@@ -61,13 +63,13 @@ type RegisterData = {
 }
 
 local DEFAULT_COMPONENT_OPTIONS = {
+    InitialTimeoutWarn = 15;
     InitialTimeout = 120;
     WrapDestroy = true;
     WrapInitial = true;
 }
 
 local MEMORY_TAG_SUFFIX = ":Initial()"
-local TIMEOUT_WARN = 15
 
 -- Associations between Instances, component classes, and component instances, to ensure immediate lookup.
 local _ComponentClassToComponents = {}
@@ -188,8 +190,8 @@ function Rosyn.GetRemovingSignal(ComponentClass: ValidComponentClass): XSignal<I
     return _GetRemovingSignal(ComponentClass)
 end
 
-local function _InitialWarning(Object, ComponentName)
-    warn(`Component '{ComponentName}' on '{Object:GetFullName()}' is taking a long time to initialize ({TIMEOUT_WARN}s)`)
+local function _InitialWarning(Object, ComponentName, Seconds)
+    warn(`Component '{ComponentName}' on '{Object:GetFullName()}' is taking a long time to initialize ({Seconds}s)`)
 end
 
 local AddComponentParams = TG.Params(TG.Instance(), ValidComponentClass)
@@ -199,7 +201,7 @@ function _AddComponent(Object: Instance, ComponentClass: ValidComponentClass)
 
     local ComponentName = _GetComponentClassName(ComponentClass)
     local ExistingComponent = _GetComponent(Object, ComponentClass)
-    
+
     if (ExistingComponent) then
         error(`Component {ComponentName} already present on {Object:GetFullName()}`)
     end
@@ -258,8 +260,9 @@ function _AddComponent(Object: Instance, ComponentClass: ValidComponentClass)
     local Initial = NewComponent.Initial
 
     if (Initial) then
+        local InitialTimeoutWarn = _GetOption(ComponentClass, "InitialTimeoutWarn") :: number
         local InitialTimeout = _GetOption(ComponentClass, "InitialTimeout") :: number
-        local InitialWarning = task.delay(TIMEOUT_WARN, _InitialWarning, Object, ComponentName)
+        local InitialWarning = task.delay(InitialTimeoutWarn, _InitialWarning, Object, ComponentName, InitialTimeoutWarn)
 
         if (_InitialTags) then
             debug.profilebegin(ComponentName .. ":Initial()")
@@ -300,7 +303,7 @@ function _AddComponent(Object: Instance, ComponentClass: ValidComponentClass)
         -- Terminate all sub-threads only if component explicitly timed out.
         -- Otherwise keep them running (until component is destroyed).
         task.delay(InitialTimeout, function()
-            local Success = AsyncResults(Thread)
+            local Success = AsyncResults(Thread).Success
 
             if (not Success) then
                 AsyncCancel(Thread, "TIMEOUT")
@@ -490,38 +493,38 @@ function Rosyn.AwaitComponentInit<T>(Object: Instance, ComponentClass: T, Timeou
     local function AwaitComponentInitial(DeductTime)
         local RemainingTimeout = CorrectedTimeout - DeductTime
         local Component = _GetComponent(Object, ComponentClass)
-    
+
         local InitialThread = _ComponentsToInitialThread[Component]
         local Metadata = AsyncGetMetadata(InitialThread)
-    
+
         -- Possibility that Initial has not finished yet. Await will also return if it's already finished.
         AsyncAwait(InitialThread, math.max(0, RemainingTimeout))
         Component = _GetComponent(Object, ComponentClass)
-    
+
         -- 1.1. Component was removed while Initial was running.
         if (not Component) then
             error(`Component '{ComponentName}' was removed while initializing`)
         end
-    
+
         local Result = Metadata.Result
-    
+
         -- 1.2. Initial timed out.
         if (Result == "TIMEOUT") then
             error(`Component '{ComponentName}' timed out while initializing`)
         end
-    
+
         local Success = Metadata.Success
-    
+
         -- 1.3. Wait call timed out before component was initialized.
         if (Success == nil) then
             error(`Component '{ComponentName}' wait call timed out ({RemainingTimeout}s)`)
         end
-    
+
         -- 1.4. Initial explicitly threw an error after wait call.
         if (not Success) then
             error(`Component '{ComponentName}' threw an error while initializing`)
         end
-    
+
         -- 1.5. Initial succeeded.
         return Component
     end
