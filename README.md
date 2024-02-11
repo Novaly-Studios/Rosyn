@@ -17,7 +17,7 @@ function Test.new(Root: Instance)
 end
 
 function Test:Initial()
-    print("Initial call")
+    print("Initial call on", self.Root:GetFullName())
 end
 
 function Test:Destroy()
@@ -32,8 +32,9 @@ Rosyn.Register({
 
 local TestInstance = Instance.new("Model")
 TestInstance:AddTag("TestTag")
+TestInstance.Name = "TestInstance"
 TestInstance.Parent = workspace
--- Output "Initial call"
+-- Output "Initial call on Workspace.TestInstance"
 TestInstance:Destroy()
 -- Output "Destroy call"
 ```
