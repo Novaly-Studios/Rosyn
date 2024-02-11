@@ -146,6 +146,7 @@ local function _GetComponent(Object, ComponentClass)
 end
 
 local GetComponentParams = TG.Params(TG.Instance(), ValidComponentClass)
+--- [DEPRECATED] Use Rosyn.AwaitComponentInit(Instance, Component, 0) due to deferred events.
 --- Attempts to obtain a specific component from an Instance given a component class.
 function Rosyn.GetComponent<T>(Object: Instance, ComponentClass: T): T?
     GetComponentParams(Object, ComponentClass)
