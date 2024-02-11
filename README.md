@@ -1,6 +1,6 @@
 # Rosyn
 
-Wraps Lua objects over Instances, automates lifecycle, and handles yielding component dependencies in a memory-safe manner.
+Wraps Lua objects over Instances, automates lifecycle with correct execution order, and handles yielding component dependencies in a memory-safe manner.
 
 ## Example Usage
 
