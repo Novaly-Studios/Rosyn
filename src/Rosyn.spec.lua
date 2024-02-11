@@ -50,8 +50,6 @@ return function()
         return Result
     end
 
-    afterEach(Rosyn._Invariant)
-
     afterAll(function()
         for _, Item in Workspace:GetChildren() do
             if (not Item:IsA("Model")) then

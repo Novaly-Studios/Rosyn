@@ -9,17 +9,17 @@ dependencies = [["TypeGuard", "tpc9000/typeguard@4.0.0"]]
 
 [[package]]
 name = "tpc9000/rosyn"
-version = "0.4.0"
-dependencies = [["Async", "tpc9000/async@0.2.1"], ["TableUtil", "tpc9000/tableutil@0.5.0"], ["TypeGuard", "tpc9000/typeguard@4.0.0"], ["XSignal", "tpc9000/xsignal@2.0.0"]]
+version = "0.4.2"
+dependencies = [["Async", "tpc9000/async@0.2.1"], ["TableUtil", "tpc9000/tableutil@0.6.0"], ["TypeGuard", "tpc9000/typeguard@5.0.0"], ["XSignal", "tpc9000/xsignal@2.0.0"]]
 
 [[package]]
 name = "tpc9000/tableutil"
-version = "0.5.0"
+version = "0.6.0"
 dependencies = []
 
 [[package]]
 name = "tpc9000/typeguard"
-version = "3.1.0"
+version = "3.3.1"
 dependencies = []
 
 [[package]]
@@ -28,6 +28,11 @@ version = "4.0.0"
 dependencies = []
 
 [[package]]
+name = "tpc9000/typeguard"
+version = "5.0.0"
+dependencies = []
+
+[[package]]
 name = "tpc9000/xsignal"
 version = "2.0.0"
-dependencies = [["TypeGuard", "tpc9000/typeguard@3.1.0"]]
+dependencies = [["TypeGuard", "tpc9000/typeguard@3.3.1"]]
