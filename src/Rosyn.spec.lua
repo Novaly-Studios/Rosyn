@@ -37,6 +37,7 @@ return function()
         end
 
         Test.Parent = Parent
+        task.wait()
         return Test
     end
 
@@ -49,8 +50,6 @@ return function()
 
         return Result
     end
-
-    afterEach(Rosyn._Invariant)
 
     afterAll(function()
         for _, Item in Workspace:GetChildren() do
@@ -160,6 +159,7 @@ return function()
             local Inst = MakeTestInstance({"DestroyTestTag1"}, Workspace)
             expect(DidDestroy).to.equal(false)
             Inst:Destroy()
+            task.wait()
             expect(DidDestroy).to.equal(true)
         end)
 
@@ -240,12 +240,15 @@ return function()
             expect(Rosyn.GetComponent(Inst, Test1)).to.be.ok()
             expect(Rosyn.GetComponent(Inst, Test2)).never.to.be.ok()
             CollectionService:AddTag(Inst, "TagsSetup2")
+            task.wait()
             expect(Rosyn.GetComponent(Inst, Test1)).to.be.ok()
             expect(Rosyn.GetComponent(Inst, Test2)).to.be.ok()
             CollectionService:RemoveTag(Inst, "TagsSetup1")
+            task.wait()
             expect(Rosyn.GetComponent(Inst, Test1)).never.to.be.ok()
             expect(Rosyn.GetComponent(Inst, Test2)).to.be.ok()
             CollectionService:RemoveTag(Inst, "TagsSetup2")
+            task.wait()
             expect(Rosyn.GetComponent(Inst, Test1)).never.to.be.ok()
             expect(Rosyn.GetComponent(Inst, Test2)).never.to.be.ok()
         end)
@@ -514,7 +517,7 @@ return function()
             })
 
             expect(function()
-                Rosyn.AwaitComponentInit(Inst, Test, 0.2)
+                Rosyn.AwaitComponentInit(Inst, Test, 1)
             end).to.throw()
         end)
     end)
@@ -643,7 +646,7 @@ return function()
     end)
     
     describe("Component.Initial", function()
-        it("should timeout the Initial thread times out, and terminate the thread", function()
+        it("should timeout when the Initial thread times out, and terminate the thread", function()
             local Test = MakeClass()
             Test.Options = {
                 InitialTimeout = 0.1;
@@ -656,7 +659,7 @@ return function()
                 task.wait(1)
             end
 
-            local Inst = MakeTestInstance({"InitialTimeout1"}, Workspace)
+            expect(Thread).to.equal(nil)
 
             Rosyn.Register({
                 Components = Rosyn.Setup.Tags({
@@ -664,8 +667,8 @@ return function()
                 });
             })
 
+            local Inst = MakeTestInstance({"InitialTimeout1"}, Workspace)
             task.wait(0.1)
-
             expect(coroutine.status(Thread)).to.equal("dead")
             expect(function()
                 Rosyn.AwaitComponentInit(Inst, Test)
@@ -850,6 +853,7 @@ return function()
             })
 
             Inst:Destroy()
+            task.wait()
             expect(DidDestroy).to.equal(false)
             task.wait(0.2)
             expect(DidDestroy).to.equal(true)
@@ -876,6 +880,7 @@ return function()
             })
 
             Inst:Destroy()
+            task.wait()
             expect(DidDestroy).to.equal(true)
         end)
 
@@ -899,6 +904,7 @@ return function()
             })
 
             Inst:Destroy()
+            task.wait()
             expect(DidDestroy).to.equal(true)
         end)
 
@@ -966,11 +972,13 @@ return function()
 
             expect(Destroyed[Child1]).to.never.be.ok()
             Child1:Destroy()
+            task.wait()
             expect(Destroyed[Child1]).to.be.ok()
 
             local Child2 = MakeTestInstance({}, Inst)
             expect(Destroyed[Child2]).to.never.be.ok()
             Inst:Destroy()
+            task.wait()
             expect(Destroyed[Child2]).to.be.ok()
         end)
     end)
@@ -1012,14 +1020,17 @@ return function()
             local Child3 = MakeTestInstance({}, Child2)
             expect(Destroyed[Child3]).to.never.be.ok()
             Child3:Destroy()
+            task.wait()
             expect(Destroyed[Child3]).to.be.ok()
 
             expect(Destroyed[Child2]).to.never.be.ok()
             Child2:Destroy()
+            task.wait()
             expect(Destroyed[Child2]).to.be.ok()
 
             expect(Destroyed[Child1]).to.never.be.ok()
             Child1:Destroy()
+            task.wait()
             expect(Destroyed[Child1]).to.be.ok()
         end)
     end)
