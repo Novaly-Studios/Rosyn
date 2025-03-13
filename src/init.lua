@@ -1,3 +1,7 @@
+--!optimize 2
+--!strict
+--!native
+
 -- Allows easy command bar paste.
 if (not script) then
 	script = game:GetService("ReplicatedFirst").Rosyn
@@ -7,11 +11,10 @@ local TableUtil = require(script.Parent:WaitForChild("TableUtil"))
     local Lockdown = TableUtil.Map.Lockdown or TableUtil.Map.MutableLockdown1D
 local XSignal = require(script.Parent:WaitForChild("XSignal"))
     type XSignal<T...> = XSignal.XSignal<T...>
-    local CreateXSignal = XSignal.new
-local Async = require(script.Parent:WaitForChild("Async"))
-    local AsyncGetMetadata = Async.GetMetadata
+    local CreateXSignal = XSignal.XSignal.new
+local Async = require(script.Parent:WaitForChild("Async")).Async
     local AsyncOnFinish = Async.OnFinish
-    local AsyncResults = Async.GetMetadata
+    local AsyncResults = Async.Results
     local AsyncCancel = Async.Cancel
     local AsyncAwait = Async.Await
     local AsyncSpawn = Async.Spawn
@@ -25,15 +28,15 @@ type RosynOptions = {
     WrapInitial: boolean?;
 }
 local RosynOptions = TG.Object({
-    DistributeLoadSeconds = TG.Number():Optional();
-    InitialTimeoutWarn = TG.Number():Optional();
-    InitialTimeout = TG.Number():Optional();
-    WrapDestroy = TG.Boolean():Optional();
-    WrapInitial = TG.Boolean():Optional();
+    DistributeLoadSeconds = TG.Optional(TG.Number());
+    InitialTimeoutWarn = TG.Optional(TG.Number());
+    InitialTimeout = TG.Optional(TG.Number());
+    WrapDestroy = TG.Optional(TG.Boolean());
+    WrapInitial = TG.Optional(TG.Boolean());
 }):Strict()
 
 type ValidComponentClass = {
-    ValidateStructure: ((ValidComponentClass) -> ())?;
+    ValidateStructure: ((Instance) -> ())?;
     Options: RosynOptions?;
     Type: string?;
     Name: string?;
@@ -46,20 +49,20 @@ type ValidComponentClass = {
     new: ((Instance) -> any);
 }
 local ValidComponentClass = TG.Object({
-    ValidateStructure = TG.Function():Optional();
-    Options = RosynOptions:Optional();
-    Type = TG.String():Optional();
-    Name = TG.String():Optional();
+    ValidateStructure = TG.Optional(TG.Function());
+    Options = TG.Optional(RosynOptions);
+    Type = TG.Optional(TG.String());
+    Name = TG.Optional(TG.String());
 
-    Initial = TG.Function():Optional();
-    Destroy = TG.Function():Optional();
+    Initial = TG.Optional(TG.Function());
+    Destroy = TG.Optional(TG.Function());
     new = TG.Function();
 }):CheckMetatable(TG.Nil()):Cached()
 
 type RegisterData = {
     DistributeOverSeconds: boolean?;
     Components: ((((Instance, ValidComponentClass) -> ()), ((Instance, ValidComponentClass) -> ())) -> ());
-    Filter: ((Instance) -> boolean)?;
+    Filter: ((Instance, ValidComponentClass) -> boolean)?;
 }
 
 local DEFAULT_COMPONENT_OPTIONS = {
@@ -121,7 +124,7 @@ local Rosyn = {
 };
 
 --- Obtains a user-defined or default setting for a component class.
-local function _GetOption(ComponentClass, Key: string): any?
+local function _GetOption(ComponentClass: ValidComponentClass, Key: string): any?
     local CustomOptions = ComponentClass.Options
 
     if (CustomOptions) then
@@ -145,15 +148,18 @@ local function _GetComponent(Object, ComponentClass)
     return ComponentsForObject and ComponentsForObject[ComponentClass] or nil
 end
 
-local GetComponentParams = TG.Params(TG.Instance(), ValidComponentClass)
---- [DEPRECATED] Use Rosyn.AwaitComponentInit(Instance, Component, 0) due to deferred events.
+local GetComponentParams = TG.Params(
+    TG.Instance(),
+    ValidComponentClass
+)
+--- Note: it is better to use Rosyn.AwaitComponentInit(Instance, Component, 0) now due to deferred events.
 --- Attempts to obtain a specific component from an Instance given a component class.
-function Rosyn.GetComponent<T>(Object: Instance, ComponentClass: T): T?
+function Rosyn.GetComponent<T>(Object: Instance, ComponentClass: T & ValidComponentClass): T?
     GetComponentParams(Object, ComponentClass)
     return _GetComponent(Object, ComponentClass)
 end
 
-local function _GetAddedSignal(ComponentClass)
+local function _GetAddedSignal(ComponentClass: ValidComponentClass): XSignal<Instance>
     local AddedEvent = _ComponentClassAddedEvents[ComponentClass]
 
     if (AddedEvent) then
@@ -172,7 +178,7 @@ function Rosyn.GetAddedSignal(ComponentClass: ValidComponentClass): XSignal<Inst
     return _GetAddedSignal(ComponentClass)
 end
 
-local function _GetRemovingSignal(ComponentClass)
+local function _GetRemovingSignal(ComponentClass: ValidComponentClass): XSignal<Instance>
     local RemovingEvent = _ComponentClassRemovingEvents[ComponentClass]
 
     if (RemovingEvent) then
@@ -195,7 +201,10 @@ local function _InitialWarning(Object, ComponentName, Seconds)
     warn(`Component '{ComponentName}' on '{Object:GetFullName()}' is taking a long time to initialize ({Seconds}s)`)
 end
 
-local AddComponentParams = TG.Params(TG.Instance(), ValidComponentClass)
+local AddComponentParams = TG.Params(
+    TG.Instance(),
+    ValidComponentClass
+)
 --- Creates and wraps a component around an Instance, given a component class.
 function _AddComponent(Object: Instance, ComponentClass: ValidComponentClass)
     AddComponentParams(Object, ComponentClass)
@@ -304,7 +313,7 @@ function _AddComponent(Object: Instance, ComponentClass: ValidComponentClass)
         -- Terminate all sub-threads only if component explicitly timed out.
         -- Otherwise keep them running (until component is destroyed).
         task.delay(InitialTimeout, function()
-            local Success = AsyncResults(Thread).Success
+            local Success = AsyncResults(Thread)
 
             if (not Success) then
                 AsyncCancel(Thread, "TIMEOUT")
@@ -316,7 +325,10 @@ function _AddComponent(Object: Instance, ComponentClass: ValidComponentClass)
     AddedSignal:Fire(Object)
 end
 
-local RemoveComponentParams = TG.Params(TG.Instance(), ValidComponentClass)
+local RemoveComponentParams = TG.Params(
+    TG.Instance(),
+    ValidComponentClass
+)
 --- Removes a component from an Instance, given a component class. Calls Destroy on component.
 function _RemoveComponent(Object: Instance, ComponentClass: ValidComponentClass)
     RemoveComponentParams(Object, ComponentClass)
@@ -380,9 +392,9 @@ function _RemoveComponent(Object: Instance, ComponentClass: ValidComponentClass)
 end
 
 local RegisterParams = TG.Params(TG.Object({
-    DistributeOverSeconds = TG.Number():Optional();
+    DistributeOverSeconds = TG.Optional(TG.Number());
     Components = TG.Function();
-    Filter = TG.Function():Optional();
+    Filter = TG.Optional(TG.Function());
 }))
 function Rosyn.Register(Data: RegisterData)
     RegisterParams(Data)
@@ -409,7 +421,7 @@ function Rosyn.Register(Data: RegisterData)
         -- Wrap destroy option -> completely lock object after its lifecycle finishes, useful for highlighting where users should not be using references to the component.
         local WrapDestroy = _GetOption(ComponentClass, "WrapDestroy")
 
-        if (WrapDestroy and not ComponentClass._DESTROY_WRAPPED) then
+        if (WrapDestroy and not ComponentClass._DESTROY_WRAPPED and OriginalDestroy) then
             ComponentClass.Destroy = function(self)
                 OriginalDestroy(self)
                 Lockdown(self)
@@ -424,15 +436,18 @@ function Rosyn.Register(Data: RegisterData)
         if (WrapInitial and not _InitialWrapped[ComponentClass]) then
             local ComponentName = _GetComponentClassName(ComponentClass)
             local OldInitial = ComponentClass.Initial
-            local MemoryTag = ComponentName .. MEMORY_TAG_SUFFIX
 
-            ComponentClass.Initial = function(self)
-                debug.setmemorycategory(MemoryTag)
-                OldInitial(self)
-                debug.resetmemorycategory()
+            if (OldInitial) then
+                local MemoryTag = ComponentName .. MEMORY_TAG_SUFFIX
+
+                ComponentClass.Initial = function(self)
+                    debug.setmemorycategory(MemoryTag)
+                    OldInitial(self)
+                    debug.resetmemorycategory()
+                end
+
+                _InitialWrapped[ComponentClass] = true
             end
-
-            _InitialWrapped[ComponentClass] = true
         end
 
         _AddComponent(Item, ComponentClass)
@@ -461,31 +476,41 @@ local function _ExpectComponent(Object, ComponentClass)
     return Component
 end
 
-local ExpectComponentParams = TG.Params(TG.Instance(), ValidComponentClass)
+local ExpectComponentParams = TG.Params(
+    TG.Instance(),
+    ValidComponentClass
+)
 --- Asserts that a component exists on a given Instance.
-function Rosyn.ExpectComponent<T>(Object: Instance, ComponentClass: T): T
+function Rosyn.ExpectComponent<T>(Object: Instance, ComponentClass: T & ValidComponentClass): T
     ExpectComponentParams(Object, ComponentClass)
     return _ExpectComponent(Object, ComponentClass)
 end
 
-local ExpectComponentInitParams = TG.Params(TG.Instance(), ValidComponentClass)
+local ExpectComponentInitParams = TG.Params(
+    TG.Instance(),
+    ValidComponentClass
+)
 --- Asserts that a component exists on a given Instance and that it has been initialized.
-function Rosyn.ExpectComponentInit<T>(Object: Instance, ComponentClass: T): T
+function Rosyn.ExpectComponentInit<T>(Object: Instance, ComponentClass: T & ValidComponentClass): T
     ExpectComponentInitParams(Object, ComponentClass)
 
     local Component = _ExpectComponent(Object, ComponentClass)
-    local Metadata = AsyncGetMetadata(_ComponentsToInitialThread[Component])
+    local Success = AsyncResults(_ComponentsToInitialThread[Component])
 
-    if (Metadata == nil or Metadata.Success == nil) then
+    if (Success == nil) then
         error(`Expected component '{_GetComponentClassName(ComponentClass)}' to be initialized on Instance '{Object:GetFullName()}'`)
     end
 
     return Component
 end
 
-local AwaitComponentInitParams = TG.Params(TG.Instance(), ValidComponentClass, TG.Number():Optional())
+local AwaitComponentInitParams = TG.Params(
+    TG.Instance(),
+    ValidComponentClass,
+    TG.Optional(TG.Number())
+)
 --- Waits for a component instance's asynchronous Initial method to complete and returns it.
-function Rosyn.AwaitComponentInit<T>(Object: Instance, ComponentClass: T, Timeout: number?): T
+function Rosyn.AwaitComponentInit<T>(Object: Instance, ComponentClass: T & ValidComponentClass, Timeout: number?): T
     AwaitComponentInitParams(Object, ComponentClass, Timeout)
 
     local CorrectedTimeout = Timeout or _GetOption(ComponentClass, "InitialTimeout")
@@ -496,7 +521,6 @@ function Rosyn.AwaitComponentInit<T>(Object: Instance, ComponentClass: T, Timeou
         local Component = _GetComponent(Object, ComponentClass)
 
         local InitialThread = _ComponentsToInitialThread[Component]
-        local Metadata = AsyncGetMetadata(InitialThread)
 
         -- Possibility that Initial has not finished yet. Await will also return if it's already finished.
         AsyncAwait(InitialThread, math.max(0, RemainingTimeout))
@@ -507,14 +531,12 @@ function Rosyn.AwaitComponentInit<T>(Object: Instance, ComponentClass: T, Timeou
             error(`Component '{ComponentName}' was removed while initializing`)
         end
 
-        local Result = Metadata.Result
+        local Success, Result = AsyncResults(InitialThread)
 
         -- 1.2. Initial timed out.
         if (Result == "TIMEOUT") then
             error(`Component '{ComponentName}' timed out while initializing`)
         end
-
-        local Success = Metadata.Success
 
         -- 1.3. Wait call timed out before component was initialized.
         if (Success == nil) then
@@ -558,9 +580,12 @@ function Rosyn.AwaitComponentInit<T>(Object: Instance, ComponentClass: T, Timeou
     return AwaitComponentInitial(os.clock() - BeginTime)
 end
 
-local GetComponentFromDescendantParams = TG.Params(TG.Instance(), ValidComponentClass)
+local GetComponentFromDescendantParams = TG.Params(
+    TG.Instance(),
+    ValidComponentClass
+)
 --- Obtains a component instance from an Instance or any of its ascendants.
-function Rosyn.GetComponentFromDescendant<T>(Object: Instance, ComponentClass: T): T?
+function Rosyn.GetComponentFromDescendant<T>(Object: Instance, ComponentClass: T & ValidComponentClass): T?
     GetComponentFromDescendantParams(Object, ComponentClass)
 
     while (Object) do
@@ -580,14 +605,14 @@ local EMPTY_UNWRITABLE = table.freeze({})
 
 local GetInstancesOfClassParams = TG.Params(ValidComponentClass)
 --- Obtains Map of all Instances for which there exists a given component class on.
-function Rosyn.GetInstancesOfClass(ComponentClass: ValidComponentClass): {[Instance]: true}
+function Rosyn.GetInstancesOfClass(ComponentClass: ValidComponentClass): {[Instance]: boolean}
     GetInstancesOfClassParams(ComponentClass)
     return _ComponentClassToInstances[ComponentClass] or EMPTY_UNWRITABLE
 end
 
 local GetComponentsOfClassParams = TG.Params(ValidComponentClass)
 --- Obtains Map of all components of a particular class.
-function Rosyn.GetComponentsOfClass<T>(ComponentClass: T): {[T]: true}
+function Rosyn.GetComponentsOfClass<T>(ComponentClass: T & ValidComponentClass): {[T]: boolean}
     GetComponentsOfClassParams(ComponentClass)
     return _ComponentClassToComponents[ComponentClass] or EMPTY_UNWRITABLE
 end

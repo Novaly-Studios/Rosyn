@@ -1,8 +1,13 @@
+--!optimize 2
+--!native
+
 local CollectionService = game:GetService("CollectionService")
 
 local TypeGuard = require(script.Parent.Parent.Parent:WaitForChild("TypeGuard"))
 
-local TagsParams = TypeGuard.Variadic(TypeGuard.Object():OfKeyType(TypeGuard.String()):OfValueType(TypeGuard.Table()))
+local TagsParams = TypeGuard.Variadic(
+    TypeGuard.Object():OfKeyType(TypeGuard.String()):OfValueType(TypeGuard.Object())
+)
 
 return function(Definitions)
     TagsParams(Definitions)

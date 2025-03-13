@@ -10,7 +10,7 @@ return function()
     local Workspace = game:GetService("Workspace")
 
     local Rosyn = require(script.Parent)
-    local Async = require(script.Parent.Parent.Async)
+    local Async = require(script.Parent.Parent.Async).Async
 
     local function MakeClass()
         local Class = {}

@@ -1,6 +1,12 @@
+--!optimize 2
+--!native
+
 local TypeGuard = require(script.Parent.Parent.Parent:WaitForChild("TypeGuard"))
 
-local ChildrenParams = TypeGuard.Params(TypeGuard.Instance(), TypeGuard.Object())
+local ChildrenParams = TypeGuard.Params(
+    TypeGuard.Instance(),
+    TypeGuard.Object()
+)
 
 return function(Root: Instance, ComponentClass)
     ChildrenParams(Root, ComponentClass)
