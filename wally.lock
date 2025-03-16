@@ -4,13 +4,13 @@ registry = "test"
 
 [[package]]
 name = "tpc9000/async"
-version = "0.3.1"
+version = "0.4.1"
 dependencies = [["TypeGuard", "tpc9000/typeguard@6.0.0-alpha.2"]]
 
 [[package]]
 name = "tpc9000/rosyn"
-version = "0.4.3"
-dependencies = [["Async", "tpc9000/async@0.3.1"], ["TableUtil", "tpc9000/tableutil@0.8.1"], ["TypeGuard", "tpc9000/typeguard@6.0.0-alpha.2"], ["XSignal", "tpc9000/xsignal@3.0.1"]]
+version = "0.4.4"
+dependencies = [["Async", "tpc9000/async@0.4.1"], ["TableUtil", "tpc9000/tableutil@0.8.1"], ["TypeGuard", "tpc9000/typeguard@6.0.0-alpha.2"], ["XSignal", "tpc9000/xsignal@3.0.1"]]
 
 [[package]]
 name = "tpc9000/tableutil"

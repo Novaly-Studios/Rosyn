@@ -12,7 +12,7 @@ local TableUtil = require(script.Parent:WaitForChild("TableUtil"))
 local XSignal = require(script.Parent:WaitForChild("XSignal"))
     type XSignal<T...> = XSignal.XSignal<T...>
     local CreateXSignal = XSignal.XSignal.new
-local Async = require(script.Parent:WaitForChild("Async")).Async
+local Async = require(script.Parent:WaitForChild("Async"))
     local AsyncOnFinish = Async.OnFinish
     local AsyncResults = Async.Results
     local AsyncCancel = Async.Cancel
@@ -77,7 +77,7 @@ local MEMORY_TAG_SUFFIX = ":Initial()"
 -- Associations between Instances, component classes, and component instances, to ensure immediate lookup.
 local _ComponentClassToComponents = {}
 local _ComponentClassToInstances = {}
-local _ComponentsToInitialThread = {} :: {[ValidComponentClass]: thread}
+local _ComponentsToInitialThread = {} :: {[ValidComponentClass]: Async.Thread<any>}
 local _InstanceToComponents = {}
 
 local _InitialWrapped = {}
@@ -154,7 +154,7 @@ local GetComponentParams = TG.Params(
 )
 --- Note: it is better to use Rosyn.AwaitComponentInit(Instance, Component, 0) now due to deferred events.
 --- Attempts to obtain a specific component from an Instance given a component class.
-function Rosyn.GetComponent<T>(Object: Instance, ComponentClass: T & ValidComponentClass): T?
+function Rosyn.GetComponent<T>(Object: Instance, ComponentClass: T): T?
     GetComponentParams(Object, ComponentClass)
     return _GetComponent(Object, ComponentClass)
 end
@@ -481,7 +481,7 @@ local ExpectComponentParams = TG.Params(
     ValidComponentClass
 )
 --- Asserts that a component exists on a given Instance.
-function Rosyn.ExpectComponent<T>(Object: Instance, ComponentClass: T & ValidComponentClass): T
+function Rosyn.ExpectComponent<T>(Object: Instance, ComponentClass: T): T
     ExpectComponentParams(Object, ComponentClass)
     return _ExpectComponent(Object, ComponentClass)
 end
@@ -491,7 +491,7 @@ local ExpectComponentInitParams = TG.Params(
     ValidComponentClass
 )
 --- Asserts that a component exists on a given Instance and that it has been initialized.
-function Rosyn.ExpectComponentInit<T>(Object: Instance, ComponentClass: T & ValidComponentClass): T
+function Rosyn.ExpectComponentInit<T>(Object: Instance, ComponentClass: T): T
     ExpectComponentInitParams(Object, ComponentClass)
 
     local Component = _ExpectComponent(Object, ComponentClass)
@@ -510,10 +510,10 @@ local AwaitComponentInitParams = TG.Params(
     TG.Optional(TG.Number())
 )
 --- Waits for a component instance's asynchronous Initial method to complete and returns it.
-function Rosyn.AwaitComponentInit<T>(Object: Instance, ComponentClass: T & ValidComponentClass, Timeout: number?): T
+function Rosyn.AwaitComponentInit<T>(Object: Instance, ComponentClass: T, Timeout: number?): T
     AwaitComponentInitParams(Object, ComponentClass, Timeout)
 
-    local CorrectedTimeout = Timeout or _GetOption(ComponentClass, "InitialTimeout")
+    local CorrectedTimeout = Timeout or _GetOption(ComponentClass :: any, "InitialTimeout")
     local ComponentName = _GetComponentClassName(ComponentClass)
 
     local function AwaitComponentInitial(DeductTime)
@@ -561,7 +561,7 @@ function Rosyn.AwaitComponentInit<T>(Object: Instance, ComponentClass: T & Valid
     -- 2. Component is not present on Instance.
     -- > Wait for component to be added to Instance.
     local Proxy = CreateXSignal() :: XSignal<boolean>
-    local AddedSignal = _GetAddedSignal(ComponentClass)
+    local AddedSignal = _GetAddedSignal(ComponentClass :: any)
     local Connection; Connection = AddedSignal:Connect(function(Target)
         if (Target == Object) then
             Connection:Disconnect()
@@ -585,7 +585,7 @@ local GetComponentFromDescendantParams = TG.Params(
     ValidComponentClass
 )
 --- Obtains a component instance from an Instance or any of its ascendants.
-function Rosyn.GetComponentFromDescendant<T>(Object: Instance, ComponentClass: T & ValidComponentClass): T?
+function Rosyn.GetComponentFromDescendant<T>(Object: Instance, ComponentClass: T): T?
     GetComponentFromDescendantParams(Object, ComponentClass)
 
     while (Object) do
@@ -612,9 +612,9 @@ end
 
 local GetComponentsOfClassParams = TG.Params(ValidComponentClass)
 --- Obtains Map of all components of a particular class.
-function Rosyn.GetComponentsOfClass<T>(ComponentClass: T & ValidComponentClass): {[T]: boolean}
+function Rosyn.GetComponentsOfClass<T>(ComponentClass: T): {[T]: boolean}
     GetComponentsOfClassParams(ComponentClass)
-    return _ComponentClassToComponents[ComponentClass] or EMPTY_UNWRITABLE
+    return _ComponentClassToComponents[ComponentClass :: any] or EMPTY_UNWRITABLE
 end
 
 local GetComponentsFromInstanceParams = TG.Params(TG.Instance())
